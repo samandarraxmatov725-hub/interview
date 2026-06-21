@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSDashu — Frontend / JS Interview Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1116;
+  --bg2:#0f161d;
+  --surface:#141d26;
+  --surface2:#1a2530;
+  --line:#243240;
+  --turq:#2dc6b7;
+  --turq-dim:#1f8d82;
+  --gold:#c9a35b;
+  --txt:#e7eef4;
+  --muted:#8497a5;
+  --ok:#36d399;
+  --bad:#f06a5a;
+  --shadow:0 18px 50px -20px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(45,198,183,.10), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(201,163,91,.07), transparent 55%),
+    var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+.mono{font-variant-numeric:tabular-nums}
+
+/* ---- girih header motif ---- */
+.hero{position:relative;padding:40px 28px 34px;border:1px solid var(--line);border-radius:22px;
+  background:linear-gradient(160deg,var(--surface),var(--bg2));overflow:hidden;box-shadow:var(--shadow)}
+.hero .girih{position:absolute;inset:0;opacity:.5;pointer-events:none}
+.hero-inner{position:relative;z-index:2}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'Space Grotesk';
+  font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--turq);
+  border:1px solid rgba(45,198,183,.3);padding:6px 12px;border-radius:999px;background:rgba(45,198,183,.06)}
+h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(28px,5vw,46px);line-height:1.05;margin:18px 0 10px;letter-spacing:-.02em}
+h1 .ac{color:var(--turq)}
+.lede{color:var(--muted);max-width:60ch;font-size:15.5px}
+.stats{display:flex;gap:26px;margin-top:24px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column}
+.stat b{font-family:'Space Grotesk';font-size:26px;color:var(--gold);line-height:1}
+.stat span{font-size:12px;color:var(--muted);letter-spacing:.04em;margin-top:5px}
+
+/* ---- mode buttons ---- */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:26px 0 8px}
+.mode{display:flex;align-items:center;gap:14px;text-align:left;padding:18px 20px;border-radius:16px;
+  border:1px solid var(--line);background:var(--surface);color:var(--txt);cursor:pointer;
+  font-family:inherit;transition:.18s;font-size:15px}
+.mode:hover{border-color:var(--turq);transform:translateY(-2px);background:var(--surface2)}
+.mode .ic{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:12px;
+  background:rgba(45,198,183,.1);border:1px solid rgba(45,198,183,.25)}
+.mode .ic svg{width:22px;height:22px;stroke:var(--turq)}
+.mode .t b{display:block;font-family:'Space Grotesk';font-weight:600;font-size:15.5px}
+.mode .t span{font-size:12.5px;color:var(--muted)}
+
+.section-label{font-family:'Space Grotesk';letter-spacing:.16em;text-transform:uppercase;
+  font-size:12px;color:var(--muted);margin:38px 4px 16px;display:flex;align-items:center;gap:12px}
+.section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ---- topic grid ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{position:relative;text-align:left;padding:20px 18px 18px;border-radius:16px;border:1px solid var(--line);
+  background:var(--surface);cursor:pointer;font-family:inherit;color:var(--txt);transition:.18s;overflow:hidden}
+.card:hover{border-color:var(--turq);transform:translateY(-3px);box-shadow:0 16px 30px -18px rgba(45,198,183,.5)}
+.card .num{font-family:'Space Grotesk';font-weight:700;font-size:13px;color:var(--turq);
+  background:rgba(45,198,183,.1);border:1px solid rgba(45,198,183,.22);width:32px;height:32px;
+  display:grid;place-items:center;border-radius:9px;margin-bottom:14px}
+.card .title{font-family:'Space Grotesk';font-weight:600;font-size:15px;line-height:1.3;min-height:40px}
+.card .meta{margin-top:12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.card .meta .dot{width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.card .star{position:absolute;right:-14px;bottom:-14px;width:64px;height:64px;opacity:.06;stroke:var(--turq);fill:none}
+
+/* ---- quiz view ---- */
+.hidden{display:none!important}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:6px}
+.back{display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--line);
+  color:var(--muted);padding:9px 14px;border-radius:10px;cursor:pointer;font-family:inherit;font-size:13px;transition:.15s}
+.back:hover{color:var(--txt);border-color:var(--turq)}
+.score-pill{font-family:'Space Grotesk';font-weight:600;font-size:13px;color:var(--gold);
+  border:1px solid var(--line);padding:9px 14px;border-radius:10px;background:var(--surface)}
+.score-pill b{color:var(--turq)}
+.qtopic{font-family:'Space Grotesk';color:var(--turq);font-size:13px;letter-spacing:.04em;margin:18px 0 6px}
+.progress{height:7px;border-radius:99px;background:var(--surface2);overflow:hidden;margin:10px 0 4px;border:1px solid var(--line)}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--turq-dim),var(--turq));transition:width .35s ease}
+.qcount{font-size:12.5px;color:var(--muted);margin-bottom:22px}
+
+.qcard{border:1px solid var(--line);background:linear-gradient(165deg,var(--surface),var(--bg2));
+  border-radius:20px;padding:30px 28px;box-shadow:var(--shadow)}
+.question{font-family:'Space Grotesk';font-weight:600;font-size:clamp(19px,2.6vw,24px);line-height:1.35;margin-bottom:24px}
+.options{display:flex;flex-direction:column;gap:12px}
+.opt{display:flex;align-items:center;gap:15px;text-align:left;padding:16px 18px;border-radius:14px;
+  border:1px solid var(--line);background:var(--surface);color:var(--txt);cursor:pointer;
+  font-family:inherit;font-size:15.5px;transition:.15s;width:100%}
+.opt:hover:not(.locked){border-color:var(--turq);background:var(--surface2)}
+.opt .key{font-family:'Space Grotesk';font-weight:700;font-size:13px;width:30px;height:30px;flex:none;
+  display:grid;place-items:center;border-radius:8px;border:1px solid var(--line);color:var(--muted);transition:.15s}
+.opt.correct{border-color:var(--ok);background:rgba(54,211,153,.1)}
+.opt.correct .key{border-color:var(--ok);color:var(--ok);background:rgba(54,211,153,.15)}
+.opt.wrong{border-color:var(--bad);background:rgba(240,106,90,.1)}
+.opt.wrong .key{border-color:var(--bad);color:var(--bad);background:rgba(240,106,90,.15)}
+.opt.locked{cursor:default}
+.opt .mark{margin-left:auto;font-size:18px;font-weight:700}
+.opt.correct .mark{color:var(--ok)}
+.opt.wrong .mark{color:var(--bad)}
+
+.explain{margin-top:18px;padding:16px 18px;border-radius:13px;border:1px solid var(--line);
+  background:var(--surface2);font-size:14.5px;color:var(--muted);display:none;align-items:flex-start;gap:12px}
+.explain.show{display:flex}
+.explain b{color:var(--turq);font-family:'Space Grotesk';font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.explain .ico{flex:none;width:20px;height:20px;stroke:var(--turq);margin-top:1px}
+
+.nav{display:flex;justify-content:flex-end;margin-top:22px}
+.next{font-family:'Space Grotesk';font-weight:600;font-size:15px;padding:14px 28px;border-radius:13px;
+  border:none;background:linear-gradient(135deg,var(--turq),var(--turq-dim));color:#04221f;cursor:pointer;
+  display:inline-flex;align-items:center;gap:9px;transition:.15s}
+.next:hover{transform:translateY(-2px);box-shadow:0 12px 26px -10px rgba(45,198,183,.6)}
+.next:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.next svg{width:18px;height:18px;stroke:#04221f}
+
+/* ---- results ---- */
+.result{text-align:center;border:1px solid var(--line);border-radius:22px;padding:46px 28px;
+  background:linear-gradient(165deg,var(--surface),var(--bg2));box-shadow:var(--shadow)}
+.ring{width:170px;height:170px;margin:0 auto 8px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .pct{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring .pct b{font-family:'Space Grotesk';font-size:44px;line-height:1}
+.ring .pct span{font-size:12px;color:var(--muted);letter-spacing:.1em}
+.result h2{font-family:'Space Grotesk';font-size:26px;margin:14px 0 6px}
+.result p{color:var(--muted);margin-bottom:26px}
+.result .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-ghost{font-family:'Space Grotesk';font-weight:600;padding:13px 24px;border-radius:12px;
+  border:1px solid var(--line);background:var(--surface);color:var(--txt);cursor:pointer;font-size:14.5px;transition:.15s}
+.btn-ghost:hover{border-color:var(--turq)}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:40px}
+.foot b{color:var(--gold)}
+@media(max-width:560px){.modes{grid-template-columns:1fr}.qcard{padding:24px 18px}.hero{padding:30px 20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== HOME ===== -->
+  <div id="home">
+    <header class="hero">
+      <svg class="girih" viewBox="0 0 600 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <pattern id="gp" width="80" height="80" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
+            <g fill="none" stroke="#2dc6b7" stroke-width="1">
+              <path d="M40 4 L52 28 L76 28 L56 44 L64 70 L40 54 L16 70 L24 44 L4 28 L28 28 Z"/>
+              <rect x="20" y="20" width="40" height="40" transform="rotate(45 40 40)"/>
+            </g>
+          </pattern>
+        </defs>
+        <rect width="600" height="260" fill="url(#gp)"/>
+      </svg>
+      <div class="hero-inner">
+        <span class="eyebrow">JSDashu • Mock Interview</span>
+        <h1>Frontend & JS <span class="ac">imtihon testi</span></h1>
+        <p class="lede">Kirishdan Event Loop, OOP, REST API va Git'gacha — 20 ta mavzu bo'yicha 400 ta savol. Har bir javobdan keyin qisqa izoh bilan o'rgan.</p>
+        <div class="stats">
+          <div class="stat"><b>20</b><span>MAVZU</span></div>
+          <div class="stat"><b>400</b><span>SAVOL</span></div>
+          <div class="stat"><b>4</b><span>VARIANT</span></div>
+          <div class="stat"><b>∞</b><span>QAYTA URINISH</span></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="modes">
+      <button class="mode" data-mode="mix30">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></span>
+        <span class="t"><b>Tasodifiy aralash test</b><span>Barcha mavzulardan 30 ta savol</span></span>
+      </button>
+      <button class="mode" data-mode="marathon">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></span>
+        <span class="t"><b>Marafon</b><span>Barcha 400 savol ketma-ket</span></span>
+      </button>
+    </div>
+
+    <div class="section-label">Mavzular</div>
+    <div class="grid" id="grid"></div>
+
+    <div class="foot">Samarqand feruzasi va <b>girih</b> bezaklari ruhida • JSDashu o'quv guruhi uchun</div>
+  </div>
+
+  <!-- ===== QUIZ ===== -->
+  <div id="quiz" class="hidden">
+    <div class="quiz-top">
+      <button class="back" id="backBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Mavzular
+      </button>
+      <div class="score-pill">To'g'ri: <b id="liveScore">0</b> / <span id="liveTotal">0</span></div>
+    </div>
+    <div class="qtopic" id="qTopic"></div>
+    <div class="progress"><i id="bar" style="width:0%"></i></div>
+    <div class="qcount"><span id="qIdx">1</span> / <span id="qTotal">20</span></div>
+
+    <div class="qcard">
+      <div class="question" id="qText"></div>
+      <div class="options" id="opts"></div>
+      <div class="explain" id="explain">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+        <div><b>Izoh</b><div id="explainTxt" style="margin-top:5px;color:var(--txt)"></div></div>
+      </div>
+      <div class="nav">
+        <button class="next" id="nextBtn" disabled>
+          <span id="nextLbl">Keyingi</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULT ===== -->
+  <div id="result" class="hidden">
+    <div class="result">
+      <div class="ring">
+        <svg width="170" height="170" viewBox="0 0 170 170">
+          <circle cx="85" cy="85" r="74" fill="none" stroke="var(--surface2)" stroke-width="13"/>
+          <circle id="ringFill" cx="85" cy="85" r="74" fill="none" stroke="var(--turq)" stroke-width="13"
+            stroke-linecap="round" stroke-dasharray="465" stroke-dashoffset="465"/>
+        </svg>
+        <div class="pct"><b id="rPct">0%</b><span>NATIJA</span></div>
+      </div>
+      <h2 id="rTitle">Tugadi!</h2>
+      <p id="rSub"></p>
+      <div class="row">
+        <button class="btn-ghost" id="retryBtn">Qayta urinish</button>
+        <button class="next" id="homeBtn"><span>Mavzularga qaytish</span></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+// Topics 1-7
+window.QUIZ_PART1 = {
+"1. Kirish. JS. V8 Engine": [
+{q:"JavaScript tilini kim yaratgan?",o:["Brendan Eich","Tim Berners-Lee","Guido van Rossum","James Gosling"],c:0,e:"JavaScript 1995-yilda Netscape'da Brendan Eich tomonidan yaratilgan."},
+{q:"JavaScript qaysi yilda yaratilgan?",o:["1991","1995","2000","2009"],c:1,e:"JS 1995-yilda, atigi 10 kunda yaratilgan dastlabki prototipi."},
+{q:"V8 dvigatelini qaysi kompaniya ishlab chiqqan?",o:["Mozilla","Microsoft","Google","Apple"],c:2,e:"V8 — Google tomonidan Chrome uchun yozilgan JS dvigateli."},
+{q:"V8 dvigateli qaysi tilda yozilgan?",o:["C","C++","Rust","Java"],c:1,e:"V8 C++ tilida yozilgan."},
+{q:"JavaScript standartini qaysi tashkilot belgilaydi?",o:["W3C","ECMA International","ISO","IEEE"],c:1,e:"JS standarti ECMAScript nomi bilan ECMA International tomonidan belgilanadi."},
+{q:"ES6 (zamonaviy JS) qaysi yili chiqqan?",o:["2009","2012","2015","2017"],c:2,e:"ECMAScript 2015 = ES6, eng katta yangilanish (let, const, arrow, class)."},
+{q:"Node.js qaysi dvigatel ustiga qurilgan?",o:["SpiderMonkey","V8","Chakra","JavaScriptCore"],c:1,e:"Node.js Google'ning V8 dvigateli ustiga qurilgan."},
+{q:"JavaScript necha oqimli (thread) til?",o:["Bir oqimli (single-threaded)","Ko'p oqimli","Oqimsiz","Cheksiz oqimli"],c:0,e:"JS bir oqimli, lekin Event Loop orqali asinxron ishlaydi."},
+{q:"'use strict' direktivasi nima qiladi?",o:["Kodni tezlashtiradi","Qattiq rejimni yoqadi","Xatolarni o'chiradi","Kodni shifrlaydi"],c:1,e:"Strict rejim ayrim xatolarga yo'l qo'ymaydi va xavfli amallarni taqiqlaydi."},
+{q:"ECMAScript va JavaScript orasidagi farq nima?",o:["Bir xil narsa","ECMAScript — spetsifikatsiya, JS — implementatsiya","JS eski, ECMA yangi","ECMA faqat Node uchun"],c:1,e:"ECMAScript — standart (spetsifikatsiya), JavaScript — uning amalga oshirilishi."},
+{q:"Firefox brauzeri qaysi JS dvigatelidan foydalanadi?",o:["V8","SpiderMonkey","Chakra","Nitro"],c:1,e:"Firefox SpiderMonkey dvigatelidan foydalanadi."},
+{q:"JavaScript qaysi turdagi til?",o:["Statik tipli","Dinamik tipli","Tipsiz kompilyatsiya","Faqat kompilyatsiya"],c:1,e:"JS dinamik tipli — o'zgaruvchi turi ish vaqtida aniqlanadi."},
+{q:"V8 ichidagi interpretator nomi nima?",o:["Ignition","TurboFan","Orinoco","Crankshaft"],c:0,e:"Ignition — V8 interpretatori, TurboFan — optimallashtiruvchi kompilyator."},
+{q:"V8 da kodni optimallashtiruvchi kompilyator nomi?",o:["Ignition","TurboFan","Liftoff","Sea"],c:1,e:"TurboFan tez-tez ishlatilgan kodni mashina kodiga optimallashtiradi (JIT)."},
+{q:"JIT kompilyatsiya nima?",o:["Oldindan kompilyatsiya","Ish vaqtida kompilyatsiya (Just-In-Time)","Kompilyatsiyasiz","Faqat brauzerda"],c:1,e:"JIT kodni ishga tushirish payti mashina kodiga aylantiradi."},
+{q:"V8 dagi axlat yig'uvchi (Garbage Collector) nima vazifani bajaradi?",o:["Kodni kompilyatsiya qiladi","Ishlatilmayotgan xotirani tozalaydi","Xatolarni topadi","Tarmoqni boshqaradi"],c:1,e:"GC ortiqcha xotirani avtomatik bo'shatadi (Orinoco)."},
+{q:"<script> tegi nima uchun ishlatiladi?",o:["Stil ulash","JS kodni ulash","Rasm qo'shish","Jadval yaratish"],c:1,e:"<script> tegi HTML ichiga JS kod yoki fayl ulaydi."},
+{q:"console.log() nima qiladi?",o:["Faylga yozadi","Konsolga chiqaradi","Serverga yuboradi","Kodni o'chiradi"],c:1,e:"console.log brauzer yoki Node konsoliga ma'lumot chiqaradi."},
+{q:"JavaScript qayerda ishlay oladi?",o:["Faqat brauzerda","Faqat serverda","Brauzer va serverda (Node)","Faqat mobil"],c:2,e:"JS brauzerda va Node.js orqali serverda ishlaydi."},
+{q:"JS kodi brauzerda nima orqali bajariladi?",o:["Kompilyator","JS dvigateli (engine)","Operatsion tizim","Tarmoq karta"],c:1,e:"Har bir brauzerda JS dvigateli (V8, SpiderMonkey va h.k.) bo'ladi."}
+],
+"2. O'zgaruvchilar, tiplar, operatorlar": [
+{q:"Qaysi kalit so'z bilan e'lon qilingan o'zgaruvchini qayta tayinlab bo'lmaydi?",o:["var","let","const","def"],c:2,e:"const — qayta tayinlab bo'lmaydigan (o'zgarmas bog'lanish) o'zgaruvchi."},
+{q:"typeof null nima qaytaradi?",o:["'null'","'object'","'undefined'","'number'"],c:1,e:"Bu JS dagi mashhur xato (bug): typeof null === 'object'."},
+{q:"JavaScriptda nechta primitiv tip bor?",o:["5","6","7","8"],c:2,e:"7 ta: string, number, boolean, null, undefined, symbol, bigint."},
+{q:"typeof undefined natijasi nima?",o:["'object'","'undefined'","'null'","'NaN'"],c:1,e:"typeof undefined === 'undefined'."},
+{q:"'5' + 3 ifodasi natijasi nima?",o:["8","'53'","'8'","NaN"],c:1,e:"+ operatori string bilan birikma (konkatenatsiya) qiladi: '53'."},
+{q:"'5' - 3 ifodasi natijasi nima?",o:["2","'2'","'53'","NaN"],c:0,e:"- operatori stringni songa o'tkazadi: 5-3=2."},
+{q:"=== operatori nimasi bilan == dan farq qiladi?",o:["Farqi yo'q","Tipni ham tekshiradi","Tezroq","Faqat sonlar uchun"],c:1,e:"=== qiymat va tipni tekshiradi, == esa tipni avtomatik o'zgartiradi."},
+{q:"Number('abc') natijasi nima?",o:["0","NaN","undefined","'abc'"],c:1,e:"Songa o'tkazib bo'lmaydigan string NaN qaytaradi."},
+{q:"Boolean('') (bo'sh string) natijasi?",o:["true","false","undefined","null"],c:1,e:"Bo'sh string — falsy qiymat, Boolean('') = false."},
+{q:"let bilan e'lon qilingan o'zgaruvchi qaysi scope'ga ega?",o:["Funksiya scope","Blok scope","Global scope","Scope yo'q"],c:1,e:"let va const blok ({}) doirasida ishlaydi."},
+{q:"NaN qaysi tipga tegishli?",o:["string","number","undefined","object"],c:1,e:"typeof NaN === 'number' (Not a Number — son tipidagi maxsus qiymat)."},
+{q:"parseInt('42px') natijasi nima?",o:["NaN","42","'42'","0"],c:1,e:"parseInt boshidan sonni o'qiydi, harflarda to'xtaydi: 42."},
+{q:"Quyidagilardan qaysi biri falsy emas?",o:["0","''","'0'","null"],c:2,e:"'0' — bo'sh bo'lmagan string, shuning uchun truthy."},
+{q:"BigInt nima uchun ishlatiladi?",o:["Katta string","Number'dan katta butun sonlar","Massiv","Sana"],c:1,e:"BigInt Number.MAX_SAFE_INTEGER'dan katta butun sonlar uchun."},
+{q:"Symbol tipi nima uchun?",o:["Matn","Noyob identifikatorlar yaratish","Sonlar","Massivlar"],c:1,e:"Har bir Symbol noyob qiymat — asosan obyekt kalitlari uchun."},
+{q:"10 % 3 natijasi nima?",o:["3","1","0","3.33"],c:1,e:"% — qoldiq operatori: 10/3=3 qoldiq 1."},
+{q:"2 ** 3 natijasi nima?",o:["6","8","9","5"],c:1,e:"** — daraja operatori: 2 ning 3-darajasi = 8."},
+{q:"let x = 5; x += 3 dan keyin x nechaga teng?",o:["3","5","8","53"],c:2,e:"x += 3 ya'ni x = x + 3 = 8."},
+{q:"null va undefined orasidagi farq nima?",o:["Bir xil","null — ataylab bo'sh, undefined — tayinlanmagan","undefined obyekt","null son"],c:1,e:"undefined — qiymat berilmagan, null — ataylab 'hech narsa' deb belgilangan."},
+{q:"String(123) natijasi qaysi tipda?",o:["number","string","boolean","object"],c:1,e:"String() har qanday qiymatni stringga o'tkazadi."}
+],
+"3. Shartlar va sikllar": [
+{q:"if shartida qaysi qiymat 'truthy' hisoblanadi?",o:["0","''","'salom'","null"],c:2,e:"Bo'sh bo'lmagan string truthy hisoblanadi."},
+{q:"switch ichida break yozilmasa nima bo'ladi?",o:["Xato","Keyingi case'larga o'tib ketadi (fall-through)","Hech narsa","Cheksiz sikl"],c:1,e:"break bo'lmasa kod keyingi case'larni ham bajaradi."},
+{q:"for siklining to'g'ri tuzilishi qaysi?",o:["for(init; shart; qadam)","for(shart; init; qadam)","for(qadam; shart; init)","for(init, shart, qadam)"],c:0,e:"for(boshlang'ich; shart; har qadam) tartibida."},
+{q:"while va do...while orasidagi asosiy farq nima?",o:["Farqi yo'q","do...while kamida bir marta bajariladi","while tezroq","do...while eski"],c:1,e:"do...while shartni keyin tekshiradi, shuning uchun tanasi 1 marta bajariladi."},
+{q:"Sikldan butunlay chiqish uchun qaysi kalit so'z?",o:["continue","break","return","exit"],c:1,e:"break siklni to'xtatadi va undan chiqadi."},
+{q:"continue nima qiladi?",o:["Siklni to'xtatadi","Joriy iteratsiyani o'tkazib yuboradi","Funksiyadan chiqadi","Xato beradi"],c:1,e:"continue qolgan kodni o'tkazib, keyingi iteratsiyaga o'tadi."},
+{q:"Massivni aylanish uchun qaysi sikl mosroq?",o:["for...in","for...of","while(true)","do...while"],c:1,e:"for...of massiv qiymatlarini to'g'ridan-to'g'ri beradi."},
+{q:"for...in nimani aylanadi?",o:["Qiymatlarni","Kalit/indekslarni","Faqat sonlarni","Funksiyalarni"],c:1,e:"for...in obyekt kalitlari yoki massiv indekslarini beradi."},
+{q:"Ternary (uchlamchi) operator sintaksisi qaysi?",o:["shart ? a : b","shart : a ? b","if shart a b","a ? b ? c"],c:0,e:"shart ? rost : yolg'on — qisqa if/else."},
+{q:"x = 5; (x > 3 && x < 10) natijasi nima?",o:["true","false","5","undefined"],c:0,e:"5>3 va 5<10 — ikkalasi rost, && rost qaytaradi."},
+{q:"|| (yoki) operatori qachon true qaytaradi?",o:["Ikkalasi rost bo'lsa","Kamida bittasi rost bo'lsa","Ikkalasi yolg'on bo'lsa","Hech qachon"],c:1,e:"|| kamida bitta operand rost bo'lsa true."},
+{q:"!true natijasi nima?",o:["true","false","undefined","1"],c:1,e:"! — inkor operatori, !true = false."},
+{q:"Cheksiz sikl qaysi holatda yuzaga keladi?",o:["Shart hech qachon false bo'lmasa","break bor","return bor","Har doim"],c:0,e:"Shart doim true qolsa sikl cheksiz davom etadi."},
+{q:"0 == false natijasi nima?",o:["true","false","NaN","xato"],c:0,e:"== tip o'zgartiradi: 0 va false teng deb topiladi."},
+{q:"0 === false natijasi nima?",o:["true","false","NaN","xato"],c:1,e:"=== tipni ham tekshiradi: number va boolean — false."},
+{q:"?? (nullish coalescing) operatori nima qiladi?",o:["null/undefined bo'lsa ikkinchisini beradi","Doim birinchini beradi","Faqat 0 uchun","Massiv qo'shadi"],c:0,e:"a ?? b — a null yoki undefined bo'lsa b qaytaradi."},
+{q:"Qaysi qiymat || da o'tkazib yuboriladi, lekin ?? da yo'q?",o:["null","undefined","0","NaN"],c:2,e:"0 falsy bo'lgani uchun || uni o'tkazadi, ?? esa faqat null/undefined'ni."},
+{q:"switch nima bilan solishtiradi?",o:["==","===","<",">"],c:1,e:"switch qat'iy tenglik (===) bilan solishtiradi."},
+{q:"if/else if/else zanjirida nechta blok bajariladi?",o:["Hammasi","Faqat birinchi rost shart","Oxirgisi","Hech biri"],c:1,e:"Faqat birinchi rost bo'lgan shartning bloki bajariladi."},
+{q:"label bilan break nima uchun ishlatiladi?",o:["Tashqi sikldan chiqish","Funksiya nomlash","Xatoni tutish","O'zgaruvchi e'lon"],c:0,e:"Label tashqi (ichma-ich) sikldan to'g'ridan chiqishga imkon beradi."}
+],
+"4. Funksiyalar": [
+{q:"Function declaration (e'lon) ning xususiyati nima?",o:["Hoisting bo'lmaydi","Hoisting bo'ladi (oldin chaqirsa bo'ladi)","Anonim","const bilan"],c:1,e:"Function declaration to'liq ko'tariladi (hoisted), e'londan oldin chaqirsa bo'ladi."},
+{q:"Arrow funksiya o'ziga xos qaysi narsaga ega EMAS?",o:["return","parametr","o'z this'i","tana"],c:2,e:"Arrow funksiyaning o'z this'i yo'q — tashqi this'ni meros oladi."},
+{q:"Quyidagilardan qaysi biri arrow funksiya?",o:["function f(){}","const f = () => {}","f: function(){}","new Function()"],c:1,e:"() => {} — arrow funksiya sintaksisi."},
+{q:"Callback funksiya nima?",o:["O'zini chaqiradigan","Boshqa funksiyaga argument sifatida beriladigan","Faqat arrow","Class metodi"],c:1,e:"Callback — boshqa funksiyaga argument bo'lib uzatilib, keyin chaqiriladigan funksiya."},
+{q:"Rekursiv funksiya nima?",o:["Tez funksiya","O'z-o'zini chaqiradigan funksiya","Arrow funksiya","Bo'sh funksiya"],c:1,e:"Rekursiya — funksiya o'zini chaqiradi (bazaviy shart kerak)."},
+{q:"Rekursiyada bazaviy shart (base case) bo'lmasa nima bo'ladi?",o:["Tezroq","Stack overflow xatosi","undefined","Hech narsa"],c:1,e:"To'xtash sharti bo'lmasa stek to'lib, RangeError (stack overflow) yuz beradi."},
+{q:"Funksiya argument berilmasa parametr qiymati qanday bo'ladi?",o:["null","0","undefined","xato"],c:2,e:"Berilmagan parametr undefined bo'ladi."},
+{q:"Default parametr qanday yoziladi?",o:["function f(a=5){}","function f(a:5){}","function f(a||5){}","function f(=5 a){}"],c:0,e:"function f(a = 5) — argument berilmasa a=5 bo'ladi."},
+{q:"Rest parametr (...args) nima qiladi?",o:["Massivni yoyadi","Qolgan argumentlarni massivga yig'adi","Obyekt qiladi","Stringni bo'ladi"],c:1,e:"...args qolgan barcha argumentlarni massivga to'playdi."},
+{q:"IIFE nima?",o:["Import funksiya","Darhol chaqiriladigan funksiya ifodasi","Class metodi","Arrow funksiya"],c:1,e:"IIFE — (function(){})() — yaratilishi bilan darhol bajariladi."},
+{q:"Funksiya nima qaytaradi, agar return yozilmasa?",o:["0","null","undefined","''"],c:2,e:"return bo'lmasa funksiya undefined qaytaradi."},
+{q:"arguments obyekti qaysi funksiyada mavjud emas?",o:["declaration","expression","arrow","named"],c:2,e:"Arrow funksiyada arguments obyekti yo'q."},
+{q:"Funksiya ifodasi (expression) qaysi?",o:["function f(){}","const f = function(){}","arrow only","class"],c:1,e:"O'zgaruvchiga tayinlangan funksiya — function expression."},
+{q:"Higher-order function (oliy tartibli funksiya) nima?",o:["Tez funksiya","Funksiya qabul qiladi yoki qaytaradi","Class","Global funksiya"],c:1,e:"HOF funksiyani argument oladi yoki funksiya qaytaradi (map, filter)."},
+{q:"map() metodiga beriladigan funksiya nima deyiladi?",o:["Konstruktor","Callback","Getter","Setter"],c:1,e:"map har element uchun callback funksiyani chaqiradi."},
+{q:"Arrow funksiyada bitta ifoda bo'lsa, return qanday?",o:["Majburiy","Avtomatik (implicit)","Yo'q","Faqat {} bilan"],c:1,e:"const f = x => x*2 — figurali qavssiz implicit return."},
+{q:"Funksiya — JavaScriptda nima hisoblanadi?",o:["Faqat sintaksis","Birinchi darajali obyekt (first-class)","Primitiv","Class"],c:1,e:"Funksiyalar qiymat kabi uzatiladi, qaytariladi — first-class citizens."},
+{q:"function expression hoisting bo'ladimi?",o:["To'liq ko'tariladi","Faqat o'zgaruvchi e'loni ko'tariladi","Yo'q, umuman","Class kabi"],c:1,e:"var f ko'tariladi lekin qiymat (funksiya) ko'tarilmaydi, undefined bo'ladi."},
+{q:"Recursive funksiyaga misol qaysi vazifa uchun mos?",o:["Faktorial hisoblash","Oddiy qo'shish","Konsolga chiqarish","O'zgaruvchi e'lon"],c:0,e:"Faktorial, Fibonacci, daraxt aylanishi — rekursiya uchun klassik misollar."},
+{q:"Anonim funksiya nima?",o:["Nomi yo'q funksiya","Arrow funksiya only","Static metod","Class"],c:0,e:"Anonim funksiya — nomsiz, odatda callback yoki ifoda sifatida ishlatiladi."}
+],
+"5. Scope, Context, Closure, Bind/Call/Apply": [
+{q:"Closure (yopilma) nima?",o:["Yopiq class","Tashqi scope o'zgaruvchilarini eslab qoluvchi funksiya","Arrow funksiya","Global o'zgaruvchi"],c:1,e:"Closure — funksiya o'zi yaratilgan leksik muhitni eslab qoladi."},
+{q:"call() va apply() orasidagi farq nima?",o:["Farqi yo'q","apply argumentlarni massiv bilan oladi","call sekinroq","apply this olmaydi"],c:1,e:"call(this, a, b), apply(this, [a, b]) — apply massiv qabul qiladi."},
+{q:"bind() nima qaytaradi?",o:["Darhol natija","this bog'langan yangi funksiya","undefined","massiv"],c:1,e:"bind chaqirmaydi, this bog'langan yangi funksiya qaytaradi."},
+{q:"Leksik scope nimaga asoslanadi?",o:["Chaqirilgan joyga","Yozilgan joyga (kodning tuzilishiga)","Vaqtga","this'ga"],c:1,e:"Leksik scope kod qayerda yozilganiga qarab aniqlanadi."},
+{q:"var qaysi scope'ga ega?",o:["Blok","Funksiya","Global only","Modul"],c:1,e:"var funksiya scope'iga ega, blok scope'ni e'tiborga olmaydi."},
+{q:"Execution Context yaratilishida nima bo'ladi?",o:["Faqat kod o'qiladi","Creation va Execution fazalari","Hech narsa","Faqat GC"],c:1,e:"Avval Creation (hoisting, this) keyin Execution fazasi bo'ladi."},
+{q:"Hoisting nima?",o:["O'chirish","E'lonlarni tepaga ko'tarish","Optimallashtirish","Sikl"],c:1,e:"Hoisting — var va funksiya e'lonlari kontekst tepasiga ko'tariladi."},
+{q:"let/const hoisting bo'ladimi?",o:["Yo'q umuman","Ha, lekin TDZ'da","var kabi","Faqat const"],c:1,e:"Ular ko'tariladi lekin Temporal Dead Zone'da — e'londan oldin ishlatib bo'lmaydi."},
+{q:"Global kontekstda this nimaga teng (brauzerda)?",o:["undefined","window","null","global"],c:1,e:"Brauzerda global this — window obyekti (strict'da undefined)."},
+{q:"Closure qaysi amaliy vazifada qo'l keladi?",o:["Maxfiy (private) o'zgaruvchilar","Sikl tezligi","Tip o'zgartirish","DOM yaratish"],c:0,e:"Closure orqali tashqaridan ko'rinmaydigan private holatlar yaratiladi."},
+{q:"Scope chain nima?",o:["Funksiyalar zanjiri","O'zgaruvchini tashqi scope'larda ketma-ket izlash","Class meros","Massiv"],c:1,e:"O'zgaruvchi topilmasa, tashqi scope'larga qarab zanjir bo'ylab izlanadi."},
+{q:"new Function bilan call'da this o'zgaradimi?",o:["call this'ni belgilaydi","this o'zgarmas","Doim window","Doim undefined"],c:0,e:"call/apply/bind funksiya ichidagi this'ni aniq belgilaydi."},
+{q:"Arrow funksiyada this qanday aniqlanadi?",o:["Chaqirilgan joydan","Tashqi (leksik) scope'dan","Doim window","Argument'dan"],c:1,e:"Arrow funksiya this'ni o'rab turgan leksik muhitdan oladi."},
+{q:"Sikl ichida var bilan setTimeout closure muammosi sababi?",o:["var funksiya scope'da bitta o'zgaruvchi","let muammosi","Arrow yo'q","Hoisting yo'q"],c:0,e:"var bitta umumiy o'zgaruvchi — barcha callback oxirgi qiymatni ko'radi. let har iteratsiyada yangi."},
+{q:"Block scope qaysi kalit so'zlar bilan hosil bo'ladi?",o:["var","let va const","function","this"],c:1,e:"let va const blok ({}) doirasida cheklangan."},
+{q:"this qiymati nimaga bog'liq?",o:["Funksiya qanday chaqirilganiga","Funksiya nomiga","Fayl nomiga","O'zgaruvchi soniga"],c:0,e:"Oddiy funksiyada this chaqirilish usuliga qarab aniqlanadi."},
+{q:"Modul (ES6) scope'i qanday?",o:["Global","Har modul o'z scope'iga ega","Funksiya scope","Yo'q"],c:1,e:"Har bir ES modul o'z izolyatsiyalangan scope'iga ega."},
+{q:"Currying nima?",o:["Funksiyani bir nechta bitta-argumentli funksiyaga bo'lish","Massiv qo'shish","this bog'lash","Sikl"],c:0,e:"Currying: f(a)(b)(c) — closure yordamida bosqichma-bosqich argument qabul qilish."},
+{q:"call/apply/bind qaysi obyekt prototipida joylashgan?",o:["Object","Array","Function.prototype","String"],c:2,e:"Bu metodlar Function.prototype'da, shuning uchun har bir funksiyada mavjud."},
+{q:"Memoizatsiya (memoization) nimaga asoslanadi?",o:["Closure'da natijani keshlash","Tip o'zgartirish","DOM","Promise"],c:0,e:"Closure ichida hisoblangan natijalarni saqlab, takror hisoblamaslik."}
+],
+"6. Obyektlar va metodlar": [
+{q:"Obyekt xossasiga nuqta orqali murojaat qaysi to'g'ri?",o:["obj->name","obj.name","obj::name","obj#name"],c:1,e:"obj.name yoki obj['name'] orqali murojaat qilinadi."},
+{q:"Object.keys(obj) nima qaytaradi?",o:["Qiymatlar massivi","Kalitlar massivi","Obyekt","Son"],c:1,e:"Object.keys obyekt kalitlarini massiv ko'rinishida beradi."},
+{q:"Object.values(obj) nima qaytaradi?",o:["Kalitlar","Qiymatlar massivi","[kalit,qiymat]","Son"],c:1,e:"Object.values obyekt qiymatlarini massiv qilib beradi."},
+{q:"Object.entries(obj) nima qaytaradi?",o:["Kalitlar","Qiymatlar","[kalit, qiymat] juftliklari","Boolean"],c:2,e:"Object.entries [[kalit,qiymat],...] juftliklar massivini beradi."},
+{q:"Obyektni nusxalashda spread (...) qanday nusxa qiladi?",o:["Chuqur (deep)","Yuzaki (shallow)","Nusxalamaydi","Faqat kalit"],c:1,e:"{...obj} yuzaki nusxa — ichki obyektlar havola bo'lib qoladi."},
+{q:"Obyektda metod nima?",o:["Xossa-funksiya","Faqat son","Kalit","Massiv"],c:0,e:"Qiymati funksiya bo'lgan xossa — metod deyiladi."},
+{q:"Metod ichida joriy obyektga qanday murojaat qilinadi?",o:["self","this","that","obj"],c:1,e:"Metod ichida this joriy obyektni bildiradi."},
+{q:"delete obj.name nima qiladi?",o:["Qiymatni 0 qiladi","Xossani o'chiradi","Obyektni o'chiradi","Xato"],c:1,e:"delete operatori obyektdan xossani butunlay olib tashlaydi."},
+{q:"'name' in obj nima tekshiradi?",o:["Qiymat borligini","Kalit (xossa) borligini","Tipni","Uzunlikni"],c:1,e:"in operatori obyektda shu kalit mavjudligini tekshiradi."},
+{q:"Object.freeze(obj) nima qiladi?",o:["O'zgartirishni taqiqlaydi","O'chiradi","Nusxalaydi","Sovutadi"],c:0,e:"freeze obyektni o'zgarmas qiladi — xossa qo'shib/o'zgartirib bo'lmaydi."},
+{q:"Object.assign(t, s) nima qiladi?",o:["s ni t ga ko'chiradi","t ni o'chiradi","Yangi class","Massiv"],c:0,e:"assign manba obyekt xossalarini nishon obyektga ko'chiradi."},
+{q:"Hisoblanadigan kalit (computed key) sintaksisi qaysi?",o:["{key: val}","{[key]: val}","{(key): val}","{key=val}"],c:1,e:"{[ifoda]: qiymat} — kalit ish vaqtida hisoblanadi."},
+{q:"Obyekt kaliti qaysi tipda bo'lishi mumkin?",o:["Faqat string","String va Symbol","Faqat son","Boolean"],c:1,e:"Oddiy kalitlar stringga aylanadi; Symbol ham kalit bo'la oladi."},
+{q:"Optional chaining (?.) nima qiladi?",o:["Xato beradi","null/undefined bo'lsa undefined qaytaradi","Doim xato","Massiv"],c:1,e:"obj?.a — obj null/undefined bo'lsa xatoga emas, undefined'ga olib keladi."},
+{q:"Object shorthand: {name} nimani anglatadi?",o:["{name: name}","{name: null}","Xato","{name: undefined}"],c:0,e:"O'zgaruvchi nomi kalitga teng bo'lsa qisqartma yoziladi."},
+{q:"getter (get) nima uchun?",o:["Xossani o'qishni funksiya bilan boshqarish","O'chirish","Massiv","Sikl"],c:0,e:"get xossani o'qiganda funksiya ishga tushadi (hisoblanadigan xossa)."},
+{q:"JSON.stringify obyektni nimaga aylantiradi?",o:["Massiv","String","Number","Boolean"],c:1,e:"stringify obyektni JSON string ko'rinishiga keltiradi."},
+{q:"Obyektlarni == bilan solishtirish nimani tekshiradi?",o:["Qiymatlarni","Havolani (xotira manzilini)","Kalitlarni","Uzunlikni"],c:1,e:"Obyektlar havola bo'yicha solishtiriladi, mazmuni bo'yicha emas."},
+{q:"Object.create(proto) nima qiladi?",o:["Prototipi proto bo'lgan obyekt yaratadi","Class yaratadi","Massiv","Nusxa"],c:0,e:"create berilgan prototip bilan yangi obyekt hosil qiladi."},
+{q:"this metod oddiy funksiya sifatida ajratib chaqirilsa nima bo'ladi?",o:["O'zgarmaydi","this yo'qoladi (undefined/window)","Xato","Doim obyekt"],c:1,e:"const f = obj.m; f() — this bog'lanishi yo'qoladi."}
+],
+"7. Number va String metodlari": [
+{q:"(3.14159).toFixed(2) natijasi nima?",o:["'3.14'","3.14","'3.1'","3"],c:0,e:"toFixed kasr qismni belgilangan xonagacha string qilib qaytaradi: '3.14'."},
+{q:"Number.isInteger(5.0) natijasi nima?",o:["true","false","NaN","undefined"],c:0,e:"5.0 butun son sifatida qaraladi — true."},
+{q:"'Salom'.length natijasi nima?",o:["4","5","6","0"],c:1,e:"length string belgilari sonini beradi: 5."},
+{q:"'abc'.toUpperCase() natijasi nima?",o:["'ABC'","'Abc'","'abc'","xato"],c:0,e:"toUpperCase barcha harflarni katta qiladi."},
+{q:"'hello world'.indexOf('world') natijasi nima?",o:["5","6","-1","11"],c:1,e:"'world' 6-indeksdan boshlanadi (0 dan sanaganda)."},
+{q:"'a,b,c'.split(',') natijasi nima?",o:["'abc'","['a','b','c']","3","['a,b,c']"],c:1,e:"split stringni ajratib massiv qaytaradi."},
+{q:"'  salom  '.trim() natijasi nima?",o:["'salom'","'  salom'","'salom  '","'  salom  '"],c:0,e:"trim ikki tomondagi bo'shliqlarni olib tashlaydi."},
+{q:"'abcdef'.slice(1,3) natijasi nima?",o:["'bc'","'bcd'","'ab'","'cd'"],c:0,e:"slice(1,3) — 1-indeksdan 3-gacha (3 kirmaydi): 'bc'."},
+{q:"'hello'.charAt(0) natijasi nima?",o:["'h'","'e'","0","'hello'"],c:0,e:"charAt belgilangan indeksdagi belgini beradi."},
+{q:"'abc'.includes('b') natijasi nima?",o:["true","false","1","'b'"],c:0,e:"includes string ichida qism borligini tekshiradi — true."},
+{q:"'5'.repeat(3) natijasi nima?",o:["'555'","15","'5 5 5'","555"],c:0,e:"repeat stringni n marta takrorlaydi: '555'."},
+{q:"parseFloat('3.14abc') natijasi nima?",o:["3","3.14","NaN","'3.14'"],c:1,e:"parseFloat boshidagi o'nlik sonni o'qiydi: 3.14."},
+{q:"'Hello'.replace('l','L') natijasi nima?",o:["'HeLlo'","'HeLLo'","'Hello'","'HELLO'"],c:0,e:"replace faqat birinchi mosligi almashtiradi: 'HeLlo'."},
+{q:"Math.round(4.5) natijasi nima?",o:["4","5","4.5","6"],c:1,e:"round eng yaqin butunga yaxlitlaydi: 5."},
+{q:"Math.floor(4.9) natijasi nima?",o:["4","5","4.9","6"],c:0,e:"floor pastga yaxlitlaydi: 4."},
+{q:"Math.ceil(4.1) natijasi nima?",o:["4","5","4.1","6"],c:1,e:"ceil yuqoriga yaxlitlaydi: 5."},
+{q:"Math.max(1,5,3) natijasi nima?",o:["1","3","5","9"],c:2,e:"max eng katta sonni qaytaradi: 5."},
+{q:"(255).toString(16) natijasi nima?",o:["'ff'","'255'","'100'","'16'"],c:0,e:"16-asosga (hex) o'tkazadi: 'ff'."},
+{q:"'abcABC'.toLowerCase() natijasi nima?",o:["'ABCABC'","'abcabc'","'abcABC'","xato"],c:1,e:"toLowerCase barcha harflarni kichik qiladi."},
+{q:"`Salom ${1+1}` (template literal) natijasi nima?",o:["'Salom 2'","'Salom 1+1'","'Salom ${2}'","xato"],c:0,e:"Template literal ${} ichidagini hisoblaydi: 'Salom 2'."}
+]
+};
+// Topics 8-14
+window.QUIZ_PART2 = {
+"8. Massivlar va metodlari": [
+{q:"map() metodi nima qaytaradi?",o:["O'zgartirilgan original massiv","Yangi massiv","Boolean","Son"],c:1,e:"map har element uchun callback natijasidan yangi massiv tuzadi."},
+{q:"filter() metodi nima qaytaradi?",o:["Boolean","Shartga mos elementli yangi massiv","Bitta element","Son"],c:1,e:"filter callback true qaytargan elementlardan yangi massiv tuzadi."},
+{q:"reduce() metodi nima uchun?",o:["Massivni yagona qiymatga jamlash","Filtrlash","Saralash","Aylanish"],c:0,e:"reduce massivni bitta qiymatga (yig'indi, obyekt) jamlaydi."},
+{q:"forEach() nima qaytaradi?",o:["Yangi massiv","undefined","Boolean","Son"],c:1,e:"forEach faqat aylanadi, undefined qaytaradi."},
+{q:"push() metodi nima qiladi?",o:["Boshiga qo'shadi","Oxiriga qo'shadi","O'chiradi","Saralaydi"],c:1,e:"push massiv oxiriga element qo'shib yangi uzunlikni qaytaradi."},
+{q:"pop() metodi nima qiladi?",o:["Oxirgini o'chirib qaytaradi","Birinchini o'chiradi","Qo'shadi","Saralaydi"],c:0,e:"pop oxirgi elementni olib tashlab, uni qaytaradi."},
+{q:"shift() metodi nima qiladi?",o:["Oxirgini o'chiradi","Birinchini o'chirib qaytaradi","Qo'shadi","Aylantiradi"],c:1,e:"shift birinchi elementni olib tashlaydi."},
+{q:"unshift() metodi nima qiladi?",o:["Boshiga qo'shadi","Oxiriga qo'shadi","O'chiradi","Saralaydi"],c:0,e:"unshift massiv boshiga element qo'shadi."},
+{q:"find() metodi nima qaytaradi?",o:["Indeks","Birinchi mos element","Massiv","Boolean"],c:1,e:"find shartga mos birinchi elementni qaytaradi (topilmasa undefined)."},
+{q:"findIndex() nima qaytaradi?",o:["Element","Birinchi mos indeks","Massiv","Boolean"],c:1,e:"findIndex shartga mos birinchi elementning indeksini beradi."},
+{q:"some() metodi nima qaytaradi?",o:["Yangi massiv","Boolean (kamida bittasi mos)","Son","Element"],c:1,e:"some kamida bitta element shartga mos bo'lsa true."},
+{q:"every() metodi nima qaytaradi?",o:["Boolean (hammasi mos)","Massiv","Son","Element"],c:0,e:"every barcha elementlar shartga mos bo'lsagina true."},
+{q:"includes() metodi nima qaytaradi?",o:["Indeks","Boolean","Element","Massiv"],c:1,e:"includes massivda qiymat borligini Boolean bilan beradi."},
+{q:"sort() metodisiz raqamlarni qanday saralaydi?",o:["Songa qarab","String sifatida (leksik)","Teskari","Saralamaydi"],c:1,e:"sort default'da elementlarni stringga aylantirib solishtiradi."},
+{q:"[3,1,2].sort((a,b)=>a-b) natijasi nima?",o:["[1,2,3]","[3,2,1]","[3,1,2]","[1,3,2]"],c:0,e:"a-b o'sish tartibida saralaydi."},
+{q:"reverse() metodi nima qiladi?",o:["Saralaydi","Massivni teskari qiladi","Nusxalaydi","Filtrlaydi"],c:1,e:"reverse massiv tartibini teskari aylantiradi (originalni o'zgartiradi)."},
+{q:"slice() va splice() farqi nima?",o:["Bir xil","slice originalni o'zgartirmaydi, splice o'zgartiradi","splice nusxa","slice o'chiradi"],c:1,e:"slice yangi qism qaytaradi; splice originalni o'zgartirib o'chiradi/qo'shadi."},
+{q:"concat() metodi nima qiladi?",o:["Massivlarni birlashtiradi","O'chiradi","Saralaydi","Filtrlaydi"],c:0,e:"concat ikki massivni birlashtirib yangi massiv qaytaradi."},
+{q:"Array.isArray([]) natijasi nima?",o:["true","false","'array'","undefined"],c:0,e:"isArray qiymat massivmi yo'qligini tekshiradi."},
+{q:"flat() metodi nima qiladi?",o:["Tekislaydi (ichki massivlarni ochadi)","Saralaydi","O'chiradi","Nusxalaydi"],c:0,e:"flat ichma-ich massivlarni bir darajaga tekislaydi."}
+],
+"9. Map, Set, WeakMap, WeakSet": [
+{q:"Map obyektdan qaysi xususiyati bilan farqlanadi?",o:["Faqat string kalit","Istalgan tipdagi kalit","Kalit yo'q","Tezroq emas"],c:1,e:"Map kaliti istalgan tip (obyekt, funksiya) bo'la oladi."},
+{q:"Set nima saqlaydi?",o:["Takrorlanuvchi qiymatlar","Faqat noyob qiymatlar","Kalit-qiymat","Faqat sonlar"],c:1,e:"Set faqat noyob (takrorlanmaydigan) qiymatlarni saqlaydi."},
+{q:"Map'ga element qo'shish metodi qaysi?",o:["push()","add()","set(k,v)","put()"],c:2,e:"map.set(kalit, qiymat) bilan qo'shiladi."},
+{q:"Set'ga element qo'shish metodi qaysi?",o:["set()","add()","push()","insert()"],c:1,e:"set.add(qiymat) bilan qo'shiladi."},
+{q:"Map o'lchamini qaysi xossa beradi?",o:["length","size","count","len"],c:1,e:"Map va Set'da .size xossasi ishlatiladi (.length emas)."},
+{q:"new Set([1,1,2,3]) natijasi necha element?",o:["4","3","2","1"],c:1,e:"Takrorlar olib tashlanadi: {1,2,3} — 3 ta."},
+{q:"Massivdan takrorlarni o'chirishning oson yo'li?",o:["[...new Set(arr)]","arr.unique()","arr.distinct()","Set yo'q"],c:0,e:"Set takrorlarni yo'qotadi, spread bilan yana massivga aylantiriladi."},
+{q:"WeakMap kaliti qaysi tipda bo'lishi SHART?",o:["String","Son","Obyekt","Boolean"],c:2,e:"WeakMap kalitlari faqat obyekt bo'lishi mumkin."},
+{q:"WeakMap/WeakSet ning 'weak' (zaif) bog'lanishi nimani anglatadi?",o:["Sekin","Kalit GC tomonidan tozalanishi mumkin","Xavfsiz","Kichik"],c:1,e:"Zaif havola — boshqa havola yo'qolsa GC obyektni tozalashga to'sqinlik qilmaydi."},
+{q:"WeakMap'ni iteratsiya qilib bo'ladimi?",o:["Ha, for...of","Yo'q, iteratsiya qilinmaydi","Faqat map","Faqat keys()"],c:1,e:"WeakMap/WeakSet iteratsiya qilinmaydi va size'i yo'q."},
+{q:"Map'da qiymat olish metodi qaysi?",o:["get(k)","find(k)","value(k)","read(k)"],c:0,e:"map.get(kalit) qiymatni qaytaradi."},
+{q:"Set'da qiymat borligini qaysi metod tekshiradi?",o:["get()","has()","find()","includes()"],c:1,e:"set.has(qiymat) Boolean qaytaradi."},
+{q:"Map'ni nima uchun obyektdan ustun qo'yish mumkin?",o:["Tartibni saqlaydi va istalgan kalit","Tezroq emas","Faqat son","JSON osonroq"],c:0,e:"Map qo'shilish tartibini saqlaydi va istalgan tipdagi kalitni qo'llab-quvvatlaydi."},
+{q:"Map'ni aylanish uchun qaysi to'g'ri?",o:["for...in","for...of va forEach","faqat while","map()"],c:1,e:"Map iteratsiya qilinadi: for...of yoki forEach orqali."},
+{q:"map.delete(k) nima qiladi?",o:["Qiymatni 0 qiladi","Kalitni o'chiradi","Map'ni o'chiradi","Xato"],c:1,e:"delete berilgan kalitni Map'dan olib tashlaydi."},
+{q:"set.clear() nima qiladi?",o:["Bitta o'chiradi","Hammasini tozalaydi","Saralaydi","Nusxalaydi"],c:1,e:"clear barcha elementlarni o'chiradi."},
+{q:"Map'ni JSON.stringify qilsa nima bo'ladi?",o:["To'liq saqlanadi","Bo'sh {} chiqadi","Massiv","Xato"],c:1,e:"Map JSON'da to'g'ri serializatsiya bo'lmaydi (bo'sh obyekt), avval entries'ga o'tkazish kerak."},
+{q:"WeakSet asosan nima uchun ishlatiladi?",o:["Obyektlarni 'belgilash' (tracking)","Saralash","JSON","Sonlar"],c:0,e:"WeakSet obyektlarni xotira sizmasdan belgilash uchun qulay."},
+{q:"Map'da [...map.keys()] nima beradi?",o:["Qiymatlar","Kalitlar massivi","Juftliklar","Size"],c:1,e:"keys() kalitlar iteratorini beradi, spread bilan massivga aylanadi."},
+{q:"Set o'lchamini topish: new Set('aab').size nechta?",o:["3","2","1","0"],c:1,e:"'aab' belgilari: a,a,b → noyoblari {a,b} → 2."}
+],
+"10. Destructuring, Spread/Rest, Date, JSON": [
+{q:"const [a,b] = [1,2] dan keyin b nechaga teng?",o:["1","2","[1,2]","undefined"],c:1,e:"Massiv destructuring: a=1, b=2."},
+{q:"const {name} = {name:'Ali'} dan keyin name nima?",o:["'Ali'","undefined","{name:'Ali'}","null"],c:0,e:"Obyekt destructuring xossani o'zgaruvchiga ajratadi: 'Ali'."},
+{q:"Spread (...) massivda nima qiladi?",o:["Yig'adi","Elementlarni yoyadi","O'chiradi","Saralaydi"],c:1,e:"...arr massiv elementlarini ajratib yoyadi."},
+{q:"Rest (...) funksiya parametrida nima qiladi?",o:["Yoyadi","Qolganlarni massivga yig'adi","O'chiradi","Nusxa"],c:1,e:"...args qolgan argumentlarni massivga to'playdi."},
+{q:"[...arr1, ...arr2] nima qiladi?",o:["Ikkala massivni birlashtiradi","Saralaydi","Filtrlaydi","Xato"],c:0,e:"Spread bilan ikki massiv birlashtiriladi."},
+{q:"Destructuring'da default qiymat: const {a=5}={} dan a nima?",o:["undefined","5","0","null"],c:1,e:"Xossa yo'q bo'lsa default 5 ishlaydi."},
+{q:"JSON.parse() nima qiladi?",o:["Obyektni stringga","JSON stringni obyektga","Massivga","Songa"],c:1,e:"parse JSON stringni JS obyektiga aylantiradi."},
+{q:"JSON.stringify() nima qiladi?",o:["Stringni obyektga","Obyektni JSON stringga","Songa","Massivga"],c:1,e:"stringify JS qiymatini JSON string ko'rinishiga keltiradi."},
+{q:"new Date() nima qaytaradi?",o:["Joriy sana/vaqt obyekti","String","Son","Massiv"],c:0,e:"new Date() hozirgi sana va vaqtni ifodalovchi obyekt."},
+{q:"Date.now() nima qaytaradi?",o:["Sana obyekti","Millisekundlardagi timestamp","String","Yil"],c:1,e:"now() 1970-yildan beri o'tgan millisekundlarni qaytaradi."},
+{q:"getMonth() qanday qiymat beradi?",o:["1-12","0-11","Oy nomi","Hozirgi kun"],c:1,e:"getMonth 0 dan (Yanvar) 11 gacha (Dekabr) qaytaradi."},
+{q:"JSON qaysi tipni saqlay olmaydi?",o:["String","Function","Number","Array"],c:1,e:"JSON funksiya va undefined'ni saqlamaydi (tashlab ketadi)."},
+{q:"Obyektni almashtirib (swap): [a,b]=[b,a] nima qiladi?",o:["Xato","a va b qiymatini almashtiradi","O'chiradi","Nusxa"],c:1,e:"Destructuring bilan vaqtinchalik o'zgaruvchisiz almashtirish."},
+{q:"const {a, ...rest} = {a:1,b:2,c:3} dan rest nima?",o:["{a:1}","{b:2,c:3}","[2,3]","1"],c:1,e:"Rest qolgan xossalarni obyektga yig'adi: {b:2,c:3}."},
+{q:"Funksiyaga massivni argument sifatida yoyish: f(...arr) nima qiladi?",o:["Massivni bitta argument","Elementlarni alohida argument qiladi","Xato","Nusxa"],c:1,e:"Spread massiv elementlarini alohida argumentlarga ajratadi."},
+{q:"JSON.stringify(obj, null, 2) dagi 2 nima?",o:["Chuqurlik","Chiroyli format (otstep bo'shliq)","Element soni","Versiya"],c:1,e:"Uchinchi argument — otstup (indentatsiya) bo'shlig'i, chiroyli ko'rinish uchun."},
+{q:"Ichma-ich destructuring: const {a:{b}}={a:{b:1}} dan b nima?",o:["{b:1}","1","undefined","a"],c:1,e:"Ichki obyektdan b=1 ajratiladi."},
+{q:"new Date('2024-01-15') nimani ifodalaydi?",o:["String","2024-yil 15-yanvar","Son","Xato"],c:1,e:"ISO formatdagi sana matni Date obyektiga aylantiriladi."},
+{q:"JSON kalitlari qanday yoziladi?",o:["Qo'shtirnoqsiz","Ikki tomonlama qo'shtirnoqda","Bitta tirnoqda","Sonli"],c:1,e:"JSON'da kalitlar majburiy ikki tomonlama qo'shtirnoqda bo'ladi."},
+{q:"getFullYear() nima qaytaradi?",o:["2 xonali yil","To'liq yil (masalan 2024)","Oy","Kun"],c:1,e:"getFullYear to'rt xonali yilni qaytaradi."}
+],
+"11. OOP, Prototype, Class": [
+{q:"class qaysi narsaning 'syntactic sugar'i (qulay yozuvi)?",o:["Funksiya","Prototip merosi","Obyekt","Massiv"],c:1,e:"class — prototipga asoslangan meros uchun zamonaviy qulay sintaksis."},
+{q:"constructor metodi qachon chaqiriladi?",o:["Har metodda","new bilan obyekt yaratilganda","Hech qachon","Class e'londa"],c:1,e:"constructor new orqali instans yaratilganda ishga tushadi."},
+{q:"extends kalit so'zi nima uchun?",o:["Metod qo'shish","Class'dan meros olish","O'chirish","Static"],c:1,e:"extends bir class'ni boshqasidan meros qilib oladi."},
+{q:"super() nima qiladi?",o:["Ota-class konstruktorini chaqiradi","Yangi obyekt","O'chiradi","Static metod"],c:0,e:"super() ota-class konstruktorini chaqiradi, this'dan oldin majburiy."},
+{q:"Prototip zanjiri (prototype chain) nima?",o:["Class ro'yxati","Obyektlar meros zanjiri","Massiv","Sikl"],c:1,e:"Xossa topilmasa __proto__ orqali ota-prototiplarda izlanadi."},
+{q:"Har bir funksiyada qaysi xossa bor?",o:["__proto__ faqat","prototype","class","extends"],c:1,e:"Funksiyalarda prototype xossasi bor — new bilan ishlatiladi."},
+{q:"static metod qayerda chaqiriladi?",o:["Instansda","Class'ning o'zida","Prototipda","Konstruktorda"],c:1,e:"static metod instansda emas, class nomida chaqiriladi (Class.metod())."},
+{q:"obj.__proto__ nima beradi?",o:["Class nomi","Obyekt prototipi","Konstruktor","Massiv"],c:1,e:"__proto__ obyektning prototipiga (ota-obyektga) ishora qiladi."},
+{q:"Class'da # bilan boshlangan maydon nima?",o:["Static","Private (xususiy)","Getter","Kommentariya"],c:1,e:"#field — class'ning xususiy (private) maydoni."},
+{q:"new operatori nima qiladi?",o:["Faqat funksiya chaqiradi","Yangi obyekt yaratadi va this'ni bog'laydi","O'chiradi","Nusxa"],c:1,e:"new yangi obyekt yaratib, prototipni ulaydi va this'ni unga bog'laydi."},
+{q:"Encapsulation (inkapsulyatsiya) nima?",o:["Ma'lumot va metodlarni birlashtirish/yashirish","Meros","Polimorfizm","Sikl"],c:0,e:"Inkapsulyatsiya — ichki holatni yashirib, faqat kerakli interfeysni ochish."},
+{q:"Polimorfizm nima?",o:["Ko'p class","Bir metodning turli class'larda har xil ishlashi","Meros","Static"],c:1,e:"Polimorfizm — bir nom ostida turli xulq (masalan, override qilingan metod)."},
+{q:"Metodni qayta yozish (override) qanday amalga oshadi?",o:["Bola class'da bir nomli metod yozib","static bilan","new bilan","delete bilan"],c:0,e:"Bola class ota metodini bir xil nom bilan qayta belgilaydi."},
+{q:"getter/setter class'da qanday yoziladi?",o:["get/set kalit so'zlari bilan","function bilan","static bilan","#"],c:0,e:"get name(){} va set name(v){} — xossaga o'qish/yozishni boshqaradi."},
+{q:"instanceof nima tekshiradi?",o:["Tipni","Obyekt class prototipidan kelib chiqqanini","Uzunlikni","Kalitni"],c:1,e:"instanceof obyekt berilgan class prototip zanjirida ekanini tekshiradi."},
+{q:"Object.getPrototypeOf(obj) nima qaytaradi?",o:["Class nomi","Obyekt prototipi","Konstruktor nomi","Massiv"],c:1,e:"Bu obyektning prototipini standart yo'l bilan qaytaradi."},
+{q:"Class'lar hoisting bo'ladimi?",o:["Ha, funksiya kabi","Yo'q (TDZ'da)","Faqat metodlar","Doim"],c:1,e:"Class e'lonlari ko'tariladi lekin ishlatib bo'lmaydi (TDZ)."},
+{q:"Konstruktor funksiya (ES5) qanday yoziladi?",o:["class bilan","Katta harfli oddiy funksiya, new bilan","arrow bilan","static bilan"],c:1,e:"function Person(){} kabi yozilib new Person() bilan chaqiriladi."},
+{q:"Prototipga metod qo'shish (ES5) qanday?",o:["Person.method=","Person.prototype.method=","Person.new=","class"],c:1,e:"Person.prototype.metod = ... barcha instanslar uchun umumiy metod."},
+{q:"Abstraksiya OOP'da nimani anglatadi?",o:["Murakkablikni yashirib soddalashtirish","Meros","Sikl","Static"],c:0,e:"Abstraksiya — ortiqcha tafsilotni yashirib, faqat zarur narsani ko'rsatish."}
+],
+"12. Instanceof, Mixin, Try/Catch, Custom Error": [
+{q:"try/catch nima uchun?",o:["Sikl uchun","Xatolarni tutib olish uchun","Tip o'zgartirish","Meros"],c:1,e:"try bloki xatoni kuzatadi, catch uni ushlaydi."},
+{q:"finally bloki qachon bajariladi?",o:["Faqat xatoda","Faqat xato bo'lmasa","Har doim (xato bo'ldimi yo'qmi)","Hech qachon"],c:2,e:"finally xato bo'lsa ham, bo'lmasa ham doim bajariladi."},
+{q:"throw kalit so'zi nima qiladi?",o:["Funksiya chaqiradi","Xato yuzaga keltiradi","Siklni to'xtatadi","Obyekt yaratadi"],c:1,e:"throw xato (yoki istalgan qiymat) tashlaydi."},
+{q:"catch(e) dagi e nima?",o:["Element","Xato obyekti","Event","Funksiya"],c:1,e:"e — ushlangan xato (Error obyekti)."},
+{q:"Custom Error qanday yaratiladi?",o:["new Error()","Error'dan extends qilib","throw 'text'","try"],c:1,e:"class MyError extends Error {} bilan maxsus xato yaratiladi."},
+{q:"Error obyektining message xossasi nima?",o:["Xato matni","Xato kodi","Stack","Tip"],c:0,e:"message — xato haqidagi matnli izoh."},
+{q:"Mixin nima?",o:["Class merosi","Metodlarni boshqa obyektga aralashtirish (qo'shish)","Xato","Sikl"],c:1,e:"Mixin — bir nechta manbadan metodlarni qo'shish usuli (ko'p meros o'rniga)."},
+{q:"instanceof Error qaysi holatda true?",o:["Doim","Obyekt Error prototipidan bo'lsa","Hech qachon","Faqat string"],c:1,e:"Error yoki uning vorisidan yaratilgan obyektda true."},
+{q:"Asinxron kodda xatoni qanday tutiladi?",o:["faqat try/catch","async/await + try/catch yoki .catch()","throw","finally"],c:1,e:"async/await'da try/catch, Promise'da .catch() ishlatiladi."},
+{q:"Error.name default qiymati nima?",o:["'Error'","'TypeError'","'Custom'","'Exception'"],c:0,e:"Oddiy Error obyektining name'i 'Error'."},
+{q:"ReferenceError qachon yuzaga keladi?",o:["Tip xato","E'lon qilinmagan o'zgaruvchiga murojaat","Sintaksis","Sikl"],c:1,e:"Mavjud bo'lmagan o'zgaruvchiga murojaatda ReferenceError."},
+{q:"TypeError qachon yuzaga keladi?",o:["Noto'g'ri tipdagi amal (masalan, son()chaqirish)","E'lonsiz","Sintaksis","GC"],c:0,e:"Qiymatni noto'g'ri tip sifatida ishlatishda TypeError."},
+{q:"SyntaxError qachon yuzaga keladi?",o:["Ish vaqtida","Kod sintaksisi noto'g'ri bo'lsa","Tarmoqda","GC"],c:1,e:"Noto'g'ri yozilgan kod tahlil (parse) bosqichida SyntaxError beradi."},
+{q:"Object.assign mixin'da nima uchun ishlatiladi?",o:["Xato","Metodlarni nishon obyektga ko'chirish","O'chirish","Sikl"],c:1,e:"Object.assign manba metodlarini target prototip/obyektga ko'chiradi."},
+{q:"throw new Error('x') dan keyin try bloki nima qiladi?",o:["Davom etadi","catch'ga sakraydi","Qotib qoladi","Qayta boshlaydi"],c:1,e:"throw'dan keyingi kod o'tkazilib, boshqaruv catch'ga o'tadi."},
+{q:"Error.stack xossasi nima beradi?",o:["Xato matni","Chaqiruvlar izi (stack trace)","Tip","Kod"],c:1,e:"stack xato qayerda yuz berganini ko'rsatuvchi chaqiruv izi."},
+{q:"Custom Error'da super(message) nima uchun?",o:["Yangi class","Error konstruktoriga message uzatish","Static","O'chirish"],c:1,e:"super(message) ota Error konstruktoriga xabarni uzatadi."},
+{q:"try ichida return bo'lsa, finally ishlaydimi?",o:["Yo'q","Ha, return'dan oldin","Faqat xatoda","Hech qachon"],c:1,e:"finally return qaytishidan oldin baribir bajariladi."},
+{q:"Bir nechta xato turini ajratish uchun catch ichida nima ishlatiladi?",o:["switch yoki instanceof tekshiruvi","throw","finally","try"],c:0,e:"catch ichida if (e instanceof X) bilan turlar ajratiladi."},
+{q:"Mixin'ning class merosidan ustunligi nimada?",o:["Tezroq","Bir nechta manbadan funksionallik (ko'p meros muammosini hal qiladi)","Static","GC"],c:1,e:"JS bitta meros qo'llaydi; mixin bir nechta xulqni birlashtirishga imkon beradi."}
+],
+"13. DOM, DOM daraxti, Bubbling/Capturing": [
+{q:"DOM nimaning qisqartmasi?",o:["Document Object Model","Data Object Map","Digital Object Mode","Dynamic Output Method"],c:0,e:"DOM — Document Object Model, sahifaning obyektli daraxti."},
+{q:"document.getElementById('x') nima qaytaradi?",o:["Massiv","Bitta element","NodeList","Boolean"],c:1,e:"Berilgan id'li bitta elementni qaytaradi (topilmasa null)."},
+{q:"querySelector('.box') nima qaytaradi?",o:["Barcha mos elementlar","Birinchi mos element","Massiv","id"],c:1,e:"querySelector birinchi mos elementni qaytaradi."},
+{q:"querySelectorAll() nima qaytaradi?",o:["Bitta element","NodeList (barcha mos)","Massiv push'li","String"],c:1,e:"querySelectorAll barcha mos elementlardan NodeList beradi."},
+{q:"Event bubbling (ko'pchish) qaysi yo'nalishda?",o:["Tashqaridan ichkariga","Ichkaridan tashqariga (bola → ota)","Chapdan o'ngga","Tartibsiz"],c:1,e:"Bubbling: hodisa nishondan yuqoriga (ota elementlarga) tarqaladi."},
+{q:"Event capturing qaysi yo'nalishda?",o:["Ichkaridan tashqariga","Tashqaridan ichkariga (ota → bola)","Pastdan yuqoriga","Yo'q"],c:1,e:"Capturing fazada hodisa tepadan nishonga tomon tushadi."},
+{q:"addEventListener'ning 3-argumenti true bo'lsa nima bo'ladi?",o:["Bubbling","Capturing fazada ishlaydi","O'chiradi","Bir marta"],c:1,e:"true — capturing fazasini yoqadi."},
+{q:"event.stopPropagation() nima qiladi?",o:["Default'ni to'xtatadi","Hodisa tarqalishini to'xtatadi","Elementni o'chiradi","Sahifani yangilaydi"],c:1,e:"Hodisaning bubbling/capturing tarqalishini to'xtatadi."},
+{q:"event.preventDefault() nima qiladi?",o:["Tarqalishni to'xtatadi","Brauzerning standart xulqini bekor qiladi","Elementni o'chiradi","Yangi event"],c:1,e:"Masalan, formani yuborish yoki havola o'tishini to'xtatadi."},
+{q:"event.target nima?",o:["Tinglovchi element","Hodisa aslida sodir bo'lgan element","document","window"],c:1,e:"target — hodisani boshlab bergan haqiqiy element."},
+{q:"DOM daraxtida eng yuqori tugun (root) nima?",o:["body","document","html","head"],c:1,e:"document — butun DOM daraxtining ildizi."},
+{q:"element.textContent nima qaytaradi?",o:["HTML teglar bilan","Faqat matn","Atribut","Massiv"],c:1,e:"textContent elementning faqat matnini (teglarsiz) beradi."},
+{q:"element.innerHTML nima beradi?",o:["Faqat matn","Ichki HTML (teglar bilan)","Atribut","Style"],c:1,e:"innerHTML element ichidagi HTML kodni beradi/o'rnatadi."},
+{q:"Node va Element farqi nima?",o:["Bir xil","Element — Node turi, matn/komment ham Node","Element kichikroq","Node yo'q"],c:1,e:"Har bir Element Node, lekin matn va kommentlar ham Node hisoblanadi."},
+{q:"parentNode nima qaytaradi?",o:["Bola element","Ota tugun","Qo'shni","document"],c:1,e:"parentNode joriy tugunning ota tugunini beradi."},
+{q:"children xossasi nima qaytaradi?",o:["Matn tugunlar bilan","Faqat element-bolalar","Ota","Atributlar"],c:1,e:"children faqat element bo'lgan bolalarni beradi (matn tugunlarsiz)."},
+{q:"event.currentTarget nima?",o:["Hodisa sodir bo'lgan element","Tinglovchi (listener) ulangan element","document","null"],c:1,e:"currentTarget — hozirda hodisani qayta ishlayotgan (listener ulangan) element."},
+{q:"DOM bilan CSSOM birgalikda nimani hosil qiladi?",o:["Render daraxti","JSON","Massiv","Event"],c:0,e:"DOM + CSSOM → Render tree, sahifa chizilishi uchun."},
+{q:"Hodisaning to'liq oqimi nechta fazadan iborat?",o:["1","2","3 (capturing, target, bubbling)","4"],c:2,e:"Capturing → Target → Bubbling — uch faza."},
+{q:"once: true opsiyasi addEventListener'da nima qiladi?",o:["Doim ishlaydi","Faqat bir marta ishlab o'chadi","Capturing","Default to'xtatadi"],c:1,e:"once: true — listener bir marta ishlagach avtomatik olib tashlanadi."}
+],
+"14. DOM manipulyatsiya, Events, Delegation": [
+{q:"Yangi element yaratish metodi qaysi?",o:["document.newElement()","document.createElement('div')","new Element()","document.add()"],c:1,e:"createElement berilgan tegli yangi element yaratadi."},
+{q:"Elementni ota ichiga qo'shish metodi qaysi?",o:["append() / appendChild()","add()","push()","insert()"],c:0,e:"appendChild yoki append elementni oxiriga qo'shadi."},
+{q:"Elementni o'chirish metodi qaysi (zamonaviy)?",o:["element.remove()","element.delete()","element.clear()","element.hide()"],c:0,e:"element.remove() elementni DOM'dan olib tashlaydi."},
+{q:"classList.add('active') nima qiladi?",o:["Klassni o'chiradi","Klass qo'shadi","Almashtiradi","Tekshiradi"],c:1,e:"classList.add elementga CSS klass qo'shadi."},
+{q:"classList.toggle('open') nima qiladi?",o:["Doim qo'shadi","Bor bo'lsa o'chiradi, yo'q bo'lsa qo'shadi","O'chiradi","Tekshiradi"],c:1,e:"toggle klassni almashtirib turadi (bor/yo'q)."},
+{q:"setAttribute('href', url) nima qiladi?",o:["Atributni o'qiydi","Atributni o'rnatadi","O'chiradi","Style"],c:1,e:"setAttribute elementga atribut qiymatini belgilaydi."},
+{q:"Event delegation (delegatsiya) asosiy g'oyasi nima?",o:["Har bolaga listener","Bitta ota elementga listener qo'yib, target'ni tekshirish","Listener yo'q","Capturing only"],c:1,e:"Bubbling tufayli ota elementda bitta listener ko'plab bolalarni boshqaradi."},
+{q:"Event delegation qaysi DOM xususiyatiga asoslanadi?",o:["Capturing","Bubbling","preventDefault","innerHTML"],c:1,e:"Hodisa bolalardan otaga ko'tarilgani (bubbling) uchun delegatsiya ishlaydi."},
+{q:"Delegatsiyada qaysi bola bosilganini qanday aniqlanadi?",o:["event.currentTarget","event.target","this","document"],c:1,e:"event.target aniq bosilgan elementni beradi."},
+{q:"e.target.matches('.btn') nima qiladi?",o:["Klik qiladi","Element selektorga mos kelishini tekshiradi","O'chiradi","Qo'shadi"],c:1,e:"matches element berilgan CSS selektorga mosligini tekshiradi (delegatsiyada qulay)."},
+{q:"Element matnini xavfsiz o'rnatish uchun qaysi yaxshiroq?",o:["innerHTML","textContent","outerHTML","write"],c:1,e:"textContent XSS xavfini kamaytiradi (HTML sifatida talqin qilinmaydi)."},
+{q:"insertAdjacentHTML('beforeend', html) nima qiladi?",o:["O'chiradi","Belgilangan joyga HTML qo'shadi","Almashtiradi","Style"],c:1,e:"Element ichi/tashqarisining aniq joyiga HTML kiritadi."},
+{q:"removeEventListener ishlashi uchun nima talab qilinadi?",o:["Anonim funksiya","Aynan o'sha funksiya havolasi","Arrow majburiy","once"],c:1,e:"Listener qo'shilgan o'sha funksiya havolasi bilan o'chiriladi."},
+{q:"element.style.color = 'red' nima qiladi?",o:["CSS faylni o'zgartiradi","Inline style o'rnatadi","Klass qo'shadi","O'chiradi"],c:1,e:"style.property inline (ichki) stilni belgilaydi."},
+{q:"DocumentFragment nima uchun ishlatiladi?",o:["Xatolar","Ko'p elementni samarali qo'shish","Style","Event"],c:1,e:"Fragment ko'p elementni xotirada yig'ib, bir marta DOM'ga qo'shadi (tezroq)."},
+{q:"input qiymatini olish uchun qaysi xossa?",o:["text","value","content","innerHTML"],c:1,e:"input.value foydalanuvchi kiritgan qiymatni beradi."},
+{q:"Qaysi hodisa input matni o'zgarganda real vaqtda ishlaydi?",o:["change","input","submit","load"],c:1,e:"input hodisasi har bir belgi kiritilganda darhol ishlaydi."},
+{q:"form submit'ni JS bilan to'xtatish uchun nima qilinadi?",o:["return false only","e.preventDefault()","stopPropagation","remove"],c:1,e:"submit listener'da preventDefault() standart yuborishni to'xtatadi."},
+{q:"Delegatsiyaning afzalligi nima?",o:["Ko'p listener","Kam listener + dinamik elementlar uchun ishlaydi","Sekinroq","Faqat capturing"],c:1,e:"Bitta listener keyin qo'shilgan bolalarga ham ishlaydi va xotira tejaydi."},
+{q:"replaceChild(yangi, eski) nima qiladi?",o:["O'chiradi","Bolani almashtiradi","Qo'shadi","Klass"],c:1,e:"replaceChild eski tugunni yangisiga almashtiradi."}
+]
+};
+// Topics 15-20
+window.QUIZ_PART3 = {
+"15. REST API, HTTP metodlari, Postman": [
+{q:"REST nimaning qisqartmasi?",o:["Remote State","Representational State Transfer","Rapid Server Tool","Resource Express"],c:1,e:"REST — Representational State Transfer arxitektura uslubi."},
+{q:"Ma'lumot OLISH uchun qaysi HTTP metod?",o:["POST","GET","DELETE","PUT"],c:1,e:"GET resurs(lar)ni o'qish uchun ishlatiladi."},
+{q:"Yangi resurs YARATISH uchun odatda qaysi metod?",o:["GET","POST","PUT","HEAD"],c:1,e:"POST yangi resurs yaratish uchun ishlatiladi."},
+{q:"Resursni TO'LIQ yangilash uchun qaysi metod?",o:["PATCH","PUT","GET","POST"],c:1,e:"PUT resursni butunlay almashtiradi (to'liq yangilash)."},
+{q:"Resursning faqat bir qismini yangilash uchun?",o:["PUT","PATCH","POST","GET"],c:1,e:"PATCH qisman yangilash uchun."},
+{q:"Resursni O'CHIRISH uchun qaysi metod?",o:["REMOVE","DELETE","DROP","CLEAR"],c:1,e:"DELETE resursni o'chiradi."},
+{q:"200 status kodi nimani bildiradi?",o:["Xato","Muvaffaqiyatli (OK)","Topilmadi","Server xatosi"],c:1,e:"200 OK — so'rov muvaffaqiyatli bajarildi."},
+{q:"404 status kodi nimani bildiradi?",o:["OK","Yaratildi","Topilmadi (Not Found)","Server xatosi"],c:2,e:"404 — so'ralgan resurs topilmadi."},
+{q:"500 status kodi nimani bildiradi?",o:["OK","Mijoz xatosi","Ichki server xatosi","Ruxsat yo'q"],c:2,e:"500 — Internal Server Error, server tomonidagi xato."},
+{q:"201 status kodi qachon qaytariladi?",o:["O'chirilganda","Resurs yaratilganda (Created)","Xato","Yo'naltirish"],c:1,e:"201 Created — yangi resurs muvaffaqiyatli yaratildi."},
+{q:"401 va 403 farqi nima?",o:["Bir xil","401 — autentifikatsiya yo'q, 403 — ruxsat yo'q","403 OK","401 server"],c:1,e:"401 — kim ekanligingiz noma'lum; 403 — ma'lum, lekin ruxsat yo'q."},
+{q:"REST'da resurslar nima orqali aniqlanadi?",o:["ID raqam","URL (endpoint)","Header","Body"],c:1,e:"Har bir resurs noyob URL (endpoint) bilan aniqlanadi."},
+{q:"Postman nima uchun ishlatiladi?",o:["Kod yozish","API'larni test qilish","Dizayn","Ma'lumotlar bazasi"],c:1,e:"Postman — API so'rovlarini yuborib test qilish vositasi."},
+{q:"REST'ning 'stateless' xususiyati nimani anglatadi?",o:["Server holatni saqlamaydi","Server doim saqlaydi","Mijoz yo'q","Faqat GET"],c:0,e:"Har bir so'rov mustaqil — server avvalgi holatni eslamaydi."},
+{q:"API'da ma'lumot odatda qaysi formatda yuboriladi?",o:["XML only","JSON","HTML","CSV only"],c:1,e:"Zamonaviy REST API'larda asosan JSON ishlatiladi."},
+{q:"Content-Type: application/json header nimani bildiradi?",o:["JS fayli","Body JSON formatida","Rasm","Matn"],c:1,e:"So'rov/javob tanasi JSON ekanini bildiradi."},
+{q:"GET so'rovida ma'lumot qayerda yuboriladi?",o:["Body","URL (query/params)","Header only","Cookie only"],c:1,e:"GET'da ma'lumot URL query parametrlarida yuboriladi (body ishlatilmaydi)."},
+{q:"Idempotent metod nima?",o:["Har safar boshqa natija","Bir necha marta chaqirsa ham bir xil natija","Faqat GET","Xato"],c:1,e:"PUT, DELETE, GET idempotent — takror chaqirilsa holat o'zgarmaydi."},
+{q:"Bearer token odatda qaysi header'da yuboriladi?",o:["Content-Type","Authorization","Accept","Host"],c:1,e:"Authorization: Bearer <token> ko'rinishida."},
+{q:"3xx status kodlar nimani bildiradi?",o:["Muvaffaqiyat","Yo'naltirish (Redirect)","Mijoz xatosi","Server xatosi"],c:1,e:"3xx — yo'naltirish (masalan, 301 Moved Permanently)."}
+],
+"16. Promise, Async/Await, Fetch, Event Loop": [
+{q:"Promise nechta holatga ega?",o:["2","3 (pending, fulfilled, rejected)","4","1"],c:1,e:"pending → fulfilled yoki rejected — uch holat."},
+{q:"Promise muvaffaqiyatli bajarilsa qaysi metod ishlaydi?",o:[".catch()",".then()",".finally()",".error()"],c:1,e:".then() resolve bo'lgan qiymatni qabul qiladi."},
+{q:"Promise rad etilsa (reject) qaysi metod ishlaydi?",o:[".then()",".catch()",".do()",".fail()"],c:1,e:".catch() xatoni ushlaydi."},
+{q:"async funksiya nima qaytaradi?",o:["Oddiy qiymat","Doim Promise","undefined","Array"],c:1,e:"async funksiya har doim Promise qaytaradi."},
+{q:"await nima qiladi?",o:["Funksiyani to'xtatadi","Promise hal bo'lguncha kutadi","Yangi promise","Xato"],c:1,e:"await Promise natijasini kutadi (async ichida)."},
+{q:"await qayerda ishlatilishi mumkin?",o:["Hamma joyda","async funksiya (yoki top-level module) ichida","Sikl only","Class"],c:1,e:"await faqat async funksiya yoki modul top-level'ida."},
+{q:"fetch() nima qaytaradi?",o:["JSON","Promise","String","Array"],c:1,e:"fetch Response'ga resolve bo'ladigan Promise qaytaradi."},
+{q:"fetch javobini JSON qilish uchun nima?",o:["res.json()","res.text()","res.body","JSON.parse(res)"],c:0,e:"await res.json() — javob tanasini JSON obyektga aylantiradi."},
+{q:"Event Loop nima qiladi?",o:["Kompilyatsiya","Call stack bo'sh bo'lganda navbatdan vazifa oladi","GC","DOM"],c:1,e:"Event Loop call stack bo'shaganda navbatdagi callbacklarni stekka qo'yadi."},
+{q:"Microtask navbatiga nima tushadi?",o:["setTimeout","Promise .then callback'lari","Render","fetch boshlanishi"],c:1,e:"Promise callbacklari microtask navbatiga tushadi."},
+{q:"Macrotask navbatiga nima tushadi?",o:["Promise","setTimeout/setInterval","await","sync kod"],c:1,e:"setTimeout, setInterval, I/O — macrotask navbatida."},
+{q:"Microtask va Macrotask qaysi avval bajariladi?",o:["Macrotask","Microtask","Bir vaqtda","Tasodifiy"],c:1,e:"Har macrotask'dan keyin barcha microtasklar avval bajariladi."},
+{q:"Promise.all() nima qiladi?",o:["Birinchisi","Hammasi bajarilishini kutadi","Tezini","Sekin"],c:1,e:"Promise.all barcha promise'lar bajarilganda natijalar massivini beradi."},
+{q:"Promise.all'da bittasi reject bo'lsa nima bo'ladi?",o:["Boshqalari davom etadi","Butun all reject bo'ladi","Hech narsa","Qayta urinadi"],c:1,e:"Bitta reject butun Promise.all'ni reject qiladi."},
+{q:"Promise.race() nima qaytaradi?",o:["Eng tez hal bo'lgan promise","Hammasi","Oxirgisi","Massiv"],c:0,e:"race birinchi hal bo'lgan (resolve/reject) promise natijasini beradi."},
+{q:"Promise.allSettled() nima qiladi?",o:["Birinchi xatoda to'xtaydi","Hammasini kutadi, har birining holatini beradi","Tezini","race"],c:1,e:"allSettled barcha natijalarni (fulfilled/rejected) beradi, to'xtamaydi."},
+{q:"setTimeout(fn, 0) darhol ishlaydimi?",o:["Ha","Yo'q, sinxron kod tugagach","Hech qachon","Microtask'da"],c:1,e:"0ms ham navbatga tushadi — joriy sinxron kod tugagach ishlaydi."},
+{q:"async/await nimaning ustiga qurilgan?",o:["Callback","Promise","setTimeout","fetch"],c:1,e:"async/await Promise'ning qulay (sintaktik) yozuvi."},
+{q:"fetch faqat tarmoq xatosida reject bo'ladi. 404 holatida nima bo'ladi?",o:["reject","resolve bo'ladi (ok=false)","Xato","Qayta urinadi"],c:1,e:"404 ham resolve bo'ladi; res.ok yoki res.status'ni tekshirish kerak."},
+{q:"Callback hell muammosini nima hal qiladi?",o:["Ko'p callback","Promise / async-await","var","sikl"],c:1,e:"Promise zanjiri va async/await ichma-ich callbacklarni soddalashtiradi."}
+],
+"17. AJAX, Axios, AbortController, Race condition": [
+{q:"AJAX nimaning qisqartmasi?",o:["Async JSON","Asynchronous JavaScript And XML","Auto JS","API XML"],c:1,e:"AJAX — Asynchronous JavaScript And XML, sahifani yangilamasdan so'rov yuborish."},
+{q:"AJAX'ning asosiy maqsadi nima?",o:["Sahifani to'liq yangilash","Sahifani yangilamasdan server bilan ma'lumot almashish","CSS","DOM yaratish"],c:1,e:"AJAX sahifa qayta yuklanmasdan fonda so'rov yuboradi."},
+{q:"Klassik AJAX qaysi obyekt orqali amalga oshirilgan?",o:["fetch","XMLHttpRequest","axios","Promise"],c:1,e:"XMLHttpRequest (XHR) — AJAX'ning klassik obyekti."},
+{q:"Axios nima?",o:["Brauzer","HTTP so'rovlar uchun kutubxona","Framework","Database"],c:1,e:"Axios — Promise asosidagi HTTP mijoz kutubxonasi."},
+{q:"Axios fetch'dan qaysi jihatdan farq qiladi?",o:["Sekinroq","JSON'ni avtomatik parse qiladi","Promise yo'q","Faqat GET"],c:1,e:"Axios javobni avtomatik JSON qiladi va 4xx/5xx'da xato tashlaydi."},
+{q:"Axios'da javob ma'lumotlari qayerda?",o:["res.json()","res.data","res.body","res.text"],c:1,e:"Axios'da ma'lumot to'g'ridan-to'g'ri res.data'da."},
+{q:"AbortController nima uchun?",o:["Xato","So'rovni bekor qilish","Tezlashtirish","Qayta urinish"],c:1,e:"AbortController davom etayotgan fetch so'rovini bekor qiladi."},
+{q:"fetch'ni bekor qilish uchun nima uzatiladi?",o:["controller.signal","controller.stop","abort()","cancel()"],c:0,e:"fetch(url, { signal: controller.signal }) — keyin controller.abort()."},
+{q:"controller.abort() chaqirilsa fetch promise'i qanday bo'ladi?",o:["resolve","AbortError bilan reject","Hech narsa","Qayta urinadi"],c:1,e:"Bekor qilingan so'rov AbortError bilan reject bo'ladi."},
+{q:"Race condition (poyga holati) nima?",o:["Tez kod","So'rovlar tartibi noaniq bo'lib noto'g'ri natija","Sikl","Xato yo'q"],c:1,e:"Bir nechta asinxron amal tartibsiz tugab, eskirgan natija ko'rsatilishi."},
+{q:"Tez yozilayotgan qidiruvda eski so'rov javobi kelishi qanday muammo?",o:["Memory leak","Race condition","Stack overflow","Syntax"],c:1,e:"Eskirgan so'rov keyin kelib natijani buzishi — klassik race condition."},
+{q:"Race condition'ni hal qilishda AbortController qanday yordam beradi?",o:["Tezlashtiradi","Eski so'rovni bekor qilib, faqat oxirgisini qoldiradi","Keshlaydi","Qayta urinadi"],c:1,e:"Yangi so'rov oldidan eskisini abort qilib, faqat dolzarb javob ishlatiladi."},
+{q:"Debounce nima uchun ishlatiladi?",o:["So'rovlar sonini kamaytirish (so'nggi harakatdan keyin)","Tezlashtirish","Xato","Stil"],c:0,e:"Debounce ketma-ket hodisalardan keyin bir marta funksiya chaqiradi."},
+{q:"Throttle nima qiladi?",o:["Funksiyani belgilangan vaqtda bir marta ishlatadi","Bekor qiladi","Xato","Keshlaydi"],c:0,e:"Throttle ma'lum interval ichida funksiyani chegaralab chaqiradi."},
+{q:"axios.post(url, data) nima qiladi?",o:["GET so'rov","POST so'rov data bilan","O'chiradi","Bekor"],c:1,e:"axios.post URL'ga data bilan POST so'rovi yuboradi."},
+{q:"Axios'da xatoni qanday ushlanadi?",o:["res.error","try/catch yoki .catch()","ok=false","finally only"],c:1,e:"Axios 4xx/5xx'da reject bo'lgani uchun try/catch yoki .catch() ishlatiladi."},
+{q:"XHR'da so'rov tugaganini qaysi hodisa bildiradi?",o:["onload / readystatechange","onclick","onsubmit","onhover"],c:0,e:"onreadystatechange yoki onload XHR yakunini kuzatadi."},
+{q:"Bir nechta so'rovni parallel yuborishda qaysi qulay?",o:["Promise.all","sikl + await ketma-ket","throw","abort"],c:0,e:"Promise.all([fetch1, fetch2]) parallel bajaradi."},
+{q:"AbortController bitta signal bilan nechta so'rovni bekor qiladi?",o:["Faqat bitta","O'sha signal ulangan barcha so'rovlarni","Hech qaysi","Cheksiz xato"],c:1,e:"Bitta signal bir nechta fetch'ga ulansa, abort hammasini bekor qiladi."},
+{q:"Race condition'da 'so'nggi yutadi' (last write wins) yondashuvi nima?",o:["Eng oxirgi javob ustivor","Birinchi javob","O'rtacha","Random"],c:0,e:"So'rovlarga tartib raqami berib, faqat eng so'nggisini qabul qilish."}
+],
+"18. OSI, HTTP/1-2, QUIC, TCP/UDP": [
+{q:"OSI modeli nechta qatlamdan iborat?",o:["5","6","7","4"],c:2,e:"OSI modeli 7 qatlamli."},
+{q:"OSI'ning eng yuqori (7-) qatlami qaysi?",o:["Physical","Application","Transport","Network"],c:1,e:"7-qatlam — Application (ilova) qatlami."},
+{q:"OSI'ning eng past (1-) qatlami qaysi?",o:["Application","Physical","Data Link","Session"],c:1,e:"1-qatlam — Physical (fizik) qatlam."},
+{q:"TCP qaysi xususiyatga ega?",o:["Ishonchsiz","Ishonchli, ulanishli (connection-oriented)","Tartibsiz","Ulanishsiz"],c:1,e:"TCP ishonchli, ketma-ketlik va yetkazishni kafolatlaydi."},
+{q:"UDP qaysi xususiyatga ega?",o:["Ishonchli","Tez, ishonchsiz, ulanishsiz","Tartibni kafolatlaydi","Sekin"],c:1,e:"UDP tez, lekin yetkazishni kafolatlamaydi (connectionless)."},
+{q:"Video striming/o'yinlarda ko'pincha qaysi protokol?",o:["TCP","UDP","FTP","SMTP"],c:1,e:"Real-time uchun tezlik muhim — UDP afzal."},
+{q:"TCP qaysi mexanizm bilan ulanish o'rnatadi?",o:["2-way","3-way handshake","Broadcast","Yo'q"],c:1,e:"SYN → SYN-ACK → ACK — uch bosqichli qo'l berishish."},
+{q:"HTTP qaysi transport protokoli ustida ishlaydi (HTTP/1,2)?",o:["UDP","TCP","ICMP","ARP"],c:1,e:"HTTP/1.1 va HTTP/2 TCP ustida ishlaydi."},
+{q:"HTTP/2 ning asosiy yangiligi nima?",o:["Faqat matn","Multiplexing (bir ulanishda parallel)","Sekinroq","Shifrlash yo'q"],c:1,e:"HTTP/2 bitta ulanishda ko'p so'rovni parallel (multiplexed) yuboradi."},
+{q:"HTTP/1.1 ning kamchiligi nima (head-of-line)?",o:["Multiplexing","Head-of-line blocking","Shifrlash","Tezlik"],c:1,e:"HTTP/1.1'da bir so'rov boshqalarni bloklab qo'yishi mumkin."},
+{q:"QUIC qaysi transport protokoli ustida ishlaydi?",o:["TCP","UDP","ICMP","SCTP"],c:1,e:"QUIC UDP ustiga qurilgan (HTTP/3 asosi)."},
+{q:"HTTP/3 qaysi protokolga asoslangan?",o:["TCP","QUIC","FTP","TLS only"],c:1,e:"HTTP/3 QUIC (UDP) ustida ishlaydi."},
+{q:"QUIC'ning afzalligi nima?",o:["Sekinroq ulanish","Tezroq ulanish va TCP head-of-line muammosini kamaytirish","Shifrlash yo'q","Faqat matn"],c:1,e:"QUIC tez ulanish, integratsiyalashgan shifrlash va kamroq bloklash beradi."},
+{q:"OSI'ning Transport qatlami nechinchi?",o:["3","4","5","7"],c:1,e:"Transport — 4-qatlam (TCP/UDP)."},
+{q:"IP-manzillash OSI'ning qaysi qatlamida?",o:["Transport","Network (3)","Data Link","Physical"],c:1,e:"IP — Network (3-) qatlamda."},
+{q:"HTTPS HTTP'dan nima bilan farq qiladi?",o:["Tezroq","TLS bilan shifrlangan","Faqat GET","Portsiz"],c:1,e:"HTTPS — TLS/SSL orqali shifrlangan HTTP."},
+{q:"HTTP standart porti qaysi?",o:["443","80","21","22"],c:1,e:"HTTP — 80-port, HTTPS — 443-port."},
+{q:"DNS nima qiladi?",o:["Shifrlaydi","Domen nomini IP'ga aylantiradi","Fayl yuboradi","Port ochadi"],c:1,e:"DNS domen nomlarini IP-manzilga o'giradi."},
+{q:"OSI'da ma'lumot paketlari har qatlamda qanday o'raladi?",o:["Encapsulation","Compilation","Hoisting","Caching"],c:0,e:"Har qatlam o'z sarlavhasini qo'shadi — enkapsulyatsiya."},
+{q:"TCP va UDP qaysi qatlam protokollari?",o:["Network","Transport","Application","Physical"],c:1,e:"Ikkalasi ham Transport (4-) qatlam protokollari."}
+],
+"19. Git/GitHub: branch, merge, PR, conflict": [
+{q:"Git nima?",o:["Brauzer","Taqsimlangan versiya nazorat tizimi","Tahrirlovchi","Tarmoq"],c:1,e:"Git — kod o'zgarishlarini kuzatuvchi versiya nazorat tizimi."},
+{q:"Git va GitHub farqi nima?",o:["Bir xil","Git — vosita, GitHub — hosting platforma","GitHub eski","Git onlayn"],c:1,e:"Git — lokal vosita; GitHub — Git repozitoriylarini saqlash xizmati."},
+{q:"O'zgarishlarni saqlash (tasdiqlash) qaysi buyruq?",o:["git save","git commit","git push","git add"],c:1,e:"git commit o'zgarishlarni tarixga yozadi."},
+{q:"Fayllarni staging'ga qo'shish buyrug'i?",o:["git add","git commit","git stage","git push"],c:0,e:"git add fayllarni commit'ga tayyorlaydi (staging)."},
+{q:"Lokal commit'larni masofaviy serverga yuborish?",o:["git pull","git push","git fetch","git clone"],c:1,e:"git push lokal commit'larni remote'ga jo'natadi."},
+{q:"Remote'dan o'zgarishlarni olib birlashtirish?",o:["git push","git pull","git add","git commit"],c:1,e:"git pull = fetch + merge — yangilanishlarni oladi."},
+{q:"Yangi branch yaratish buyrug'i?",o:["git branch yangi","git new branch","git make","git fork"],c:0,e:"git branch <nom> yangi tarmoq yaratadi."},
+{q:"Branchga o'tish (zamonaviy) buyrug'i?",o:["git switch / git checkout","git go","git move","git open"],c:0,e:"git switch <nom> yoki git checkout <nom>."},
+{q:"Branch yaratib darhol o'tish?",o:["git branch -d","git checkout -b nom","git merge","git pull"],c:1,e:"git checkout -b <nom> (yoki git switch -c)."},
+{q:"Merge nima qiladi?",o:["Branchni o'chiradi","Ikki branchni birlashtiradi","Clone qiladi","Push qiladi"],c:1,e:"merge bir branch o'zgarishlarini boshqasiga qo'shadi."},
+{q:"Merge conflict qachon yuzaga keladi?",o:["Doim","Bir xil qatorlar har xil o'zgartirilganda","Push'da","Branch'da"],c:1,e:"Ikki branch bir joyni boshqacha o'zgartirsa konflikt bo'ladi."},
+{q:"Conflict belgilarida <<<<<<< nima bildiradi?",o:["Yakun","Joriy (HEAD) o'zgarish boshi","Remote","Komment"],c:1,e:"<<<<<<< HEAD — joriy branch qismi boshlanishi."},
+{q:"Pull Request (PR) nima?",o:["Push","O'zgarishlarni ko'rib chiqib birlashtirish so'rovi","Branch","Clone"],c:1,e:"PR — o'zgarishlarni review qilib asosiy branchga qo'shish taklifi."},
+{q:"git clone nima qiladi?",o:["Branch","Repozitoriyni nusxalab oladi","O'chiradi","Commit"],c:1,e:"clone masofaviy repozitoriyning to'liq nusxasini oladi."},
+{q:"git status nima ko'rsatadi?",o:["Tarix","Joriy o'zgarishlar holatini","Branchlar","Remote"],c:1,e:"status o'zgartirilgan/staged fayllarni ko'rsatadi."},
+{q:"git log nima ko'rsatadi?",o:["Holat","Commit tarixi","Konflikt","Branch"],c:1,e:"log commitlar tarixini ko'rsatadi."},
+{q:"O'zgarishlarni vaqtincha yashirish (saqlab qo'yish)?",o:["git stash","git hide","git save","git drop"],c:0,e:"git stash commit qilmasdan o'zgarishlarni vaqtincha saqlaydi."},
+{q:".gitignore fayli nima uchun?",o:["Branch ro'yxati","Git kuzatmasligi kerak fayllar","Commit xabari","Remote"],c:1,e:".gitignore'dagi fayllar versiya nazoratiga kirmaydi (masalan, node_modules)."},
+{q:"Fork nima?",o:["Branch","Boshqa repozitoriyning shaxsiy nusxasini olish","Merge","Stash"],c:1,e:"Fork — GitHub'da boshqaning reposini o'z hisobingizga nusxalash."},
+{q:"git merge'dan keyin konfliktni hal qilib nima qilinadi?",o:["push only","Fayllarni to'g'rilab, add va commit","clone","stash"],c:1,e:"Konflikt belgilarini olib, to'g'rilab, git add va git commit qilinadi."}
+],
+"20. Amaliy loyiha va Mock interview": [
+{q:"Loyiha boshlashda npm bilan nimadan boshlanadi?",o:["npm start","npm init","npm push","npm build"],c:1,e:"npm init package.json yaratadi."},
+{q:"Kutubxona o'rnatish buyrug'i?",o:["npm get","npm install","npm add only","npm load"],c:1,e:"npm install <paket> bog'liqlikni o'rnatadi."},
+{q:"package.json nima saqlaydi?",o:["Kodni","Loyiha metama'lumotlari va bog'liqliklarni","Rasmlarni","Branchlarni"],c:1,e:"package.json loyiha nomi, skriptlar va dependencylarni saqlaydi."},
+{q:"node_modules papkasi odatda qayerga qo'yiladi?",o:["Commit qilinadi",".gitignore'ga","ZIP qilinadi","Push qilinadi"],c:1,e:"node_modules .gitignore'ga qo'yiladi — npm install bilan tiklanadi."},
+{q:"DRY prinsipi nimani anglatadi?",o:["Tez yozish","Takrorlamaslik (Don't Repeat Yourself)","Hujjatlash","Test"],c:1,e:"DRY — bir xil kodni qaytarmaslik, qayta ishlatish."},
+{q:"== va === orasidan qaysi biri tavsiya etiladi?",o:["==","===","ikkalasi bir xil","hech qaysi"],c:1,e:"=== tipni ham tekshirgani uchun kutilmagan xatolardan saqlaydi."},
+{q:"Sof funksiya (pure function) nima?",o:["Tez funksiya","Yon ta'sirsiz, bir xil kirishga bir xil chiqish","Global","Arrow"],c:1,e:"Pure function tashqi holatga ta'sir qilmaydi va deterministik."},
+{q:"Kodni o'qiluvchan qilishda eng muhim narsa?",o:["Qisqa nomlar","Aniq, mazmunli nom va izchillik","Kommentsiz","Bir qatorda"],c:1,e:"Mazmunli nomlar va izchil uslub kodni tushunarli qiladi."},
+{q:"Mock interviewda kod yozishdan oldin nima qilish yaxshi?",o:["Darhol yozish","Muammoni aniqlab, savol berib, yondashuvni tushuntirish","Jim turish","Tugatmaslik"],c:1,e:"Avval muammoni aniqlab, fikrlash jarayonini ovoz chiqarib tushuntirish muhim."},
+{q:"Time complexity O(n) nimani anglatadi?",o:["Doimiy vaqt","Kirish hajmiga chiziqli bog'liq","Kvadrat","Logarifmik"],c:1,e:"O(n) — bajarilish vaqti element soniga proporsional."},
+{q:"O(1) nima?",o:["Chiziqli","Doimiy (kirish hajmiga bog'liq emas)","Kvadrat","Eksponensial"],c:1,e:"O(1) — vaqt doimiy, hajmga bog'liq emas (masalan, massiv indeksi)."},
+{q:"O(n²) qaysi holatda yuzaga keladi?",o:["Bitta sikl","Ichma-ich (nested) sikl","Indeks","map"],c:1,e:"Ikki ichma-ich sikl O(n²) murakkablik beradi."},
+{q:"Hash map (obyekt) bo'yicha qidiruv o'rtacha murakkabligi?",o:["O(n)","O(1)","O(n²)","O(log n)"],c:1,e:"Hash map'da kalit bo'yicha kirish o'rtacha O(1)."},
+{q:"console.log bilan kodni tekshirish nima deyiladi?",o:["Refactoring","Debugging","Linting","Deploying"],c:1,e:"Debugging — xatolarni topib tuzatish jarayoni."},
+{q:"Kod sifatini avtomatik tekshiruvchi vosita?",o:["Linter (ESLint)","Compiler","Browser","Git"],c:0,e:"ESLint kabi linterlar uslub va potensial xatolarni topadi."},
+{q:"Loyihani GitHub Pages'ga joylash uchun nima kerak?",o:["Server","Statik fayllar (HTML/CSS/JS)","Database","Docker"],c:1,e:"GitHub Pages statik saytlarni bepul hostlaydi."},
+{q:"Muammoni hal qilishda 'edge case' nima?",o:["Asosiy holat","Chekka/istisno holatlar (bo'sh, null, juda katta)","Xato","Sikl"],c:1,e:"Edge case — bo'sh massiv, null, eng katta/kichik kabi chekka holatlar."},
+{q:"REST API'ni frontend'dan chaqirishda qaysi ishlatiladi?",o:["SQL","fetch / axios","Git","npm"],c:1,e:"Brauzerda fetch yoki axios orqali API chaqiriladi."},
+{q:"Foydalanuvchi kiritgan ma'lumotni nima qilish kerak (xavfsizlik)?",o:["To'g'ridan ishlatish","Validatsiya va tozalash (sanitize)","E'tiborsiz","innerHTML"],c:1,e:"Kirish ma'lumotini tekshirib, XSS/inyeksiyadan himoyalash kerak."},
+{q:"Mock interviewda javobni bilmasangiz eng yaxshi yondashuv?",o:["Jim turish","Fikrlashni ovoz chiqarib, taxmin va yondashuvni aytish","Mavzuni o'zgartirish","Tark etish"],c:1,e:"Bilmaslikni tan olib, mantiqiy yondashuvni ko'rsatish ijobiy baholanadi."}
+]
+};
+/* ===== merge data ===== */
+const QUIZ = Object.assign({}, window.QUIZ_PART1, window.QUIZ_PART2, window.QUIZ_PART3);
+const TOPICS = Object.keys(QUIZ);
+const KEYS = ['A','B','C','D'];
+
+const $ = id => document.getElementById(id);
+const home=$('home'), quiz=$('quiz'), result=$('result');
+
+/* ===== state ===== */
+let pool=[], idx=0, score=0, answered=false, currentTopicLabel='';
+
+/* ===== helpers ===== */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* shuffle options of a question while tracking correct index */
+function prep(q){
+  const opts=q.o.map((text,i)=>({text,correct:i===q.c}));
+  const sh=shuffle(opts);
+  return {question:q.q, explain:q.e, options:sh, correctIdx:sh.findIndex(o=>o.correct)};
+}
+
+/* ===== render home grid ===== */
+function renderGrid(){
+  const g=$('grid'); g.innerHTML='';
+  TOPICS.forEach((t,i)=>{
+    const cleanTitle=t.replace(/^\d+\.\s*/,'');
+    const num=t.match(/^(\d+)/)[1];
+    const b=document.createElement('button');
+    b.className='card';
+    b.innerHTML=`
+      <div class="num">${num}</div>
+      <div class="title">${cleanTitle}</div>
+      <div class="meta"><span class="dot"></span>${QUIZ[t].length} ta savol</div>
+      <svg class="star" viewBox="0 0 64 64"><path d="M32 4 L40 24 L60 24 L44 38 L50 60 L32 46 L14 60 L20 38 L4 24 L24 24 Z" stroke-width="2"/></svg>`;
+    b.onclick=()=>startTopic(t);
+    g.appendChild(b);
+  });
+}
+
+/* ===== start modes ===== */
+function startTopic(t){
+  currentTopicLabel=t.replace(/^\d+\.\s*/,'');
+  pool=QUIZ[t].map(prep);          // keep topic order, shuffle options only
+  launch();
+}
+function startMix(n){
+  currentTopicLabel='Aralash test';
+  const flat=[];
+  TOPICS.forEach(t=>QUIZ[t].forEach(q=>flat.push(q)));
+  pool=shuffle(flat).slice(0,n).map(prep);
+  launch();
+}
+function startMarathon(){
+  currentTopicLabel='Marafon — barcha mavzular';
+  const flat=[];
+  TOPICS.forEach(t=>QUIZ[t].forEach(q=>flat.push(q)));
+  pool=flat.map(prep);
+  launch();
+}
+
+function launch(){
+  idx=0; score=0; answered=false;
+  home.classList.add('hidden'); result.classList.add('hidden'); quiz.classList.remove('hidden');
+  $('liveTotal').textContent=pool.length;
+  $('qTotal').textContent=pool.length;
+  $('qTopic').textContent=currentTopicLabel;
+  window.scrollTo({top:0,behavior:'instant'});
+  renderQ();
+}
+
+/* ===== render a question ===== */
+function renderQ(){
+  answered=false;
+  const q=pool[idx];
+  $('liveScore').textContent=score;
+  $('qIdx').textContent=idx+1;
+  $('bar').style.width=((idx)/pool.length*100)+'%';
+  $('qText').textContent=q.question;
+  $('explain').classList.remove('show');
+  $('explainTxt').textContent=q.explain;
+  const next=$('nextBtn'); next.disabled=true;
+  $('nextLbl').textContent = idx===pool.length-1 ? 'Natijani ko\'rish' : 'Keyingi';
+
+  const wrap=$('opts'); wrap.innerHTML='';
+  q.options.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML=`<span class="key">${KEYS[i]}</span><span class="lbl">${o.text}</span><span class="mark"></span>`;
+    btn.onclick=()=>choose(i);
+    wrap.appendChild(btn);
+  });
+}
+
+/* ===== answering ===== */
+function choose(i){
+  if(answered) return;
+  answered=true;
+  const q=pool[idx];
+  const nodes=[...$('opts').children];
+  nodes.forEach(n=>n.classList.add('locked'));
+  const correct=q.correctIdx;
+  if(i===correct){
+    score++;
+    nodes[i].classList.add('correct');
+    nodes[i].querySelector('.mark').textContent='✓';
+  } else {
+    nodes[i].classList.add('wrong');
+    nodes[i].querySelector('.mark').textContent='✕';
+    nodes[correct].classList.add('correct');
+    nodes[correct].querySelector('.mark').textContent='✓';
+  }
+  $('liveScore').textContent=score;
+  $('explain').classList.add('show');
+  $('nextBtn').disabled=false;
+}
+
+function next(){
+  if(!answered) return;
+  if(idx<pool.length-1){ idx++; renderQ(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else showResult();
+}
+
+/* ===== result ===== */
+function showResult(){
+  quiz.classList.add('hidden'); result.classList.remove('hidden');
+  const pct=Math.round(score/pool.length*100);
+  $('rPct').textContent=pct+'%';
+  $('rTitle').textContent =
+    pct>=90?'Zo\'r natija! 🏆': pct>=70?'Yaxshi ish!': pct>=50?'Yomon emas':'Mashq kerak';
+  $('rSub').textContent=`${pool.length} savoldan ${score} tasiga to'g'ri javob berdingiz.`;
+  const C=2*Math.PI*74;
+  const fill=$('ringFill'); fill.style.strokeDasharray=C;
+  fill.style.strokeDashoffset=C;
+  fill.style.stroke = pct>=70?'var(--turq)': pct>=50?'var(--gold)':'var(--bad)';
+  requestAnimationFrame(()=>{fill.style.transition='stroke-dashoffset 1s ease';fill.style.strokeDashoffset=C*(1-pct/100);});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ===== nav buttons ===== */
+$('nextBtn').onclick=next;
+$('backBtn').onclick=()=>{quiz.classList.add('hidden');result.classList.add('hidden');home.classList.remove('hidden');};
+$('homeBtn').onclick=()=>{result.classList.add('hidden');home.classList.remove('hidden');};
+$('retryBtn').onclick=()=>{pool=shuffle(pool);launch();};
+document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>{
+  const m=b.dataset.mode; m==='mix30'?startMix(30):startMarathon();
+});
+
+/* ===== keyboard ===== */
+document.addEventListener('keydown',e=>{
+  if(quiz.classList.contains('hidden')) return;
+  if(['1','2','3','4'].includes(e.key)){ const n=$('opts').children[+e.key-1]; if(n)n.click(); }
+  if((e.key==='Enter'||e.key===' ')&&answered){ e.preventDefault(); next(); }
+});
+
+renderGrid();
+
+</script>
+</body>
+</html>
